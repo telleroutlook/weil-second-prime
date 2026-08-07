@@ -45,10 +45,10 @@ $J_{ij}(\tau_2,\tau_3)$，$\tau_p=\log p/L$。$c_L$ 在窗口右端约 1.82。
 
 | # | 动作 | 状态 |
 |---|---|---|
-| S1 | 仓库脚手架（README/CLAUDE/PLAN/HANDOFF/骨架目录） | 🟡 进行中 |
-| S2 | 移植共享机件：archimedean 积分器、interval、ldlt、log_moments、kernel | ⬜ |
+| S1 | 仓库脚手架（README/CLAUDE/PLAN/HANDOFF/骨架目录） | ✅ 完成 |
+| S2 | 移植共享机件：archimedean 积分器、interval、ldlt、log_moments、kernel + **单素数极限自检** | ⬜ |
 | S3 | 双平移素数层 `legendre_shift_2prime.py`（从 weil-first 原型移入并补全交叉项） | ⬜ |
-| S4 | **首要发现动作**：per-sector 素数影响 profile（廉价 mutation 式探针） | ⬜ |
+| S4 | **首要发现动作**：per-sector 素数影响 profile（廉价 mutation 式探针，**certify 级精度**） | ⬜ |
 | S5 | 第二窗口 schema + domain + 第一份 pilot 证书骨架 | ⬜ |
 
 > **S4 是最重要的短期动作**（来自 weil-first 实测 steer）：第一窗口 even 扇区素数项
@@ -56,6 +56,18 @@ $J_{ij}(\tau_2,\tau_3)$，$\tau_p=\log p/L$。$c_L$ 在窗口右端约 1.82。
 > 扇区。故第二窗口**不要对称分配算力**：先 profile 各扇区/各素数/交叉项影响，把硬算力
 > 花在真正移动 pivot 处（预期 odd 扇区 / 更大 L / 交叉项 $J(\tau_2,\tau_3)$）。
 > 短期测量重定向长期投入。
+>
+> **精度纪律（来自 weil-first 30× 误差教训）**：S4 的"哪项影响大/小"是算力投向决策，
+> 必须 certify 级（Arb interval）确认后才能定论。快扫可做初筛，但任何方向性结论须明确
+> 标注精度等级（探路/certify），且有 certify 级数字支撑。探路精度的数字不得下决策
+> 判决（PROOF_CONSTITUTION A3）。
+
+> **S2 移植纪律**：
+> - 移植来源：`weil-first-prime/src/archimedean/` 的**当前版本**（S_KK-only bug 已于
+>   2026-08-08 修复，四项 S0 已验证）。不得携带任何 S_KK-only 残留逻辑。
+> - **S2 验收门槛**（不等 S3）：单素数极限自检——weil-second 在 τ₃→0（3 号素数不参与）
+>   时，Schur 矩阵各元素必须**逐元素**复现 weil-first 在同 L 点的结果。误差容限：
+>   max|C_second − C_first| < 1e-10（float64）。只有通过此检验才标记 S2 为完成。
 
 ---
 
