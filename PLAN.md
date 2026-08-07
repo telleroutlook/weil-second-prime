@@ -46,7 +46,7 @@ $J_{ij}(\tau_2,\tau_3)$，$\tau_p=\log p/L$。$c_L$ 在窗口右端约 1.82。
 | # | 动作 | 状态 |
 |---|---|---|
 | S1 | 仓库脚手架（README/CLAUDE/PLAN/HANDOFF/骨架目录） | ✅ 完成 |
-| S2 | 移植共享机件：archimedean 积分器、interval、ldlt、log_moments、kernel + **单素数极限自检** | ⬜ |
+| S2 | 移植共享机件：archimedean 积分器、interval、ldlt、log_moments、kernel + **单素数极限自检** | ✅ 完成 |
 | S3 | 双平移素数层 `legendre_shift_2prime.py`（从 weil-first 原型移入并补全交叉项） | ⬜ |
 | S4 | **首要发现动作**：per-sector 素数影响 profile（廉价 mutation 式探针，**certify 级精度**） | ⬜ |
 | S5 | 第二窗口 schema + domain + 第一份 pilot 证书骨架 | ⬜ |
@@ -95,8 +95,16 @@ $J_{ij}(\tau_2,\tau_3)$，$\tau_p=\log p/L$。$c_L$ 在窗口右端约 1.82。
 
 | 文件 | 状态 | 说明 |
 |---|---|---|
-| （移植中） | — | S2 完成后填写：archimedean 积分器等来自 weil-first 可信副本 |
-| src/prime_layer/legendre_shift_2prime.py | 原型（未认证） | 双平移种子，来自 weil-first 原型；补全交叉项前不得用于证书 |
+| src/archimedean/{integrator_a,integrator_b,interval,ldlt,log_moments,kernel,bernstein}.py | ✅ 可信（移植自 weil-first 当前版，四项 S0 已验证） | 逐字移植，82 tests 通过。P0 bug 已在源仓库修复。 |
+| checker/archimedean/{integrate,check_archimedean,replay}.py | ✅ 可信（移植） | 共享 archimedean checker 机件。 |
+| checker/fp035/recompute_schur.py | ✅ 可信（移植，作单素数 ground truth） | 正确四项 S0 + min-pivot。S2 自检的对照实现。 |
+| src/prime_layer/legendre_shift.py | ✅ 可信（移植） | 单素数 J/E，Fraction 精确算术，25 tests 通过。 |
+| src/prime_layer/legendre_shift_2prime.py | 🟡 部分（M2 双平移完整；S2 交叉项 F 未实现，c3≠0 时 raise） | **不含 F=0 静默漏项**（C11 纪律）。补全 F 前不得用于 c3≠0 证书。S3 任务。 |
+| scripts/single_prime_limit_check.py + tests/prime_layer/test_single_prime_limit.py | ✅ 可信 | S2 验收门：c3=0 时两素数层逐元素复现 weil-first，max\|dC\|=0（精确）。 |
+
+> **S2 验收结果（2026-08-08）**：单素数极限自检通过。L=0.6 两扇区 N=3，
+> 完整装配 Schur 矩阵 C 逐元素 max\|C_second − C_first\| = 0.00e+00（精确复现，
+> 因 c3=0 路径重算同一 J/E）。prime-layer 级 + assembled-C 级双重验证。
 
 最危险 bug 模式（继承 + 放大）：漏二阶矩项 **或漏一个素数平移/交叉项** → 残差偏小 →
 判据假通过。S0 必须四项；S2 必须含两个素数平移的全部交叉项。

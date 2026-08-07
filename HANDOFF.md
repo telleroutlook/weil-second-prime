@@ -1,27 +1,38 @@
 # Handoff — weil-second-prime (scaffold, 2026-08-08)
 
 ## 1. One-line status
-Scaffold only. No math computed, no certificate, no proofctl graph yet. This repo
-is the second-prime-window ($\tfrac12\log3 < L < \log2$) sibling of
-weil-first-prime, created to be (a) a new mathematics host and (b) a fresh live
-host that co-evolves proofctl. **Scope: finite-scale positivity, does NOT imply RH.**
+S2 DONE (2026-08-08). Shared archimedean machinery + single-prime layer ported
+verbatim from weil-first (82 upstream tests + 16 new self-check tests = 98 pass).
+The S2 acceptance gate — single-prime-limit self-check — PASSES: with prime 3
+switched off (c3=0), the two-prime layer reproduces weil-first's assembled Schur
+matrix element-wise (max|dC| = 0.00e+00, exact). Next: S3 (cross-prime term F).
+**Scope: finite-scale positivity, does NOT imply RH.**
 
 ## 2. What exists now
 - `README.md`, `CLAUDE.md`, `PLAN.md`, this file — identity, rules, plan.
-- Empty skeleton dirs: `src/{archimedean,prime_layer,assemble}`, `checker/`,
-  `schemas/`, `domains/fp_second/contracts/`, `docs/`, `tests/`, `scripts/`,
-  `pilots/`, `lean4/`.
+- `src/archimedean/{integrator_a,integrator_b,interval,ldlt,log_moments,kernel,bernstein}.py`
+  — ported verbatim (trusted, four-term S0, P0 bugs already fixed upstream).
+- `checker/archimedean/{integrate,check_archimedean,replay}.py` — shared checker machinery.
+- `checker/fp035/recompute_schur.py` — trusted four-term S0 + min-pivot, single-prime
+  ground truth for the S2 self-check.
+- `src/prime_layer/legendre_shift.py` — single-prime J/E (ported).
+- `src/prime_layer/legendre_shift_2prime.py` — two-prime layer: M2 both shifts complete;
+  S2 cross term F NOT yet implemented, RAISES when c3!=0 (no silent F=0 — C11 discipline).
+- `scripts/single_prime_limit_check.py` + `tests/prime_layer/test_single_prime_limit.py`
+  — the S2 acceptance gate.
 - `docs/PROOF_CONSTITUTION.md` (ported from weil-first — the epistemic discipline).
 
 ## 3. The next concrete steps (in order)
-1. **S2 — port shared machinery** from `../weil-first-prime`:
-   `src/archimedean/{integrator_a,integrator_b,interval,ldlt,log_moments,kernel,bernstein}.py`.
-   These are the trusted, tested archimedean primitives (P0 bugs already fixed).
-   Port verbatim, then run their tests. Do NOT rewrite.
-2. **S3 — two-shift prime layer**: move `src/prime_layer/legendre_shift_2prime.py`
-   (currently a prototype in weil-first) here and complete the cross-prime $S^{(2)}$
-   terms. Ground-truth check: single-prime limit ($c_3=0$) must reproduce
-   weil-first's `legendre_shift.py`.
+1. **S2 — port shared machinery** — ✅ DONE. Ported verbatim, tests pass,
+   single-prime-limit self-check PASSES (max|dC|=0).
+2. **S3 — two-shift prime layer**: implement the cross-prime term
+   $F_{ij}(\tau_2,\tau_3) = \langle C_{\tau_3,1}P_j, C_{\tau_2,1}P_i\rangle$ in
+   `legendre_shift_2prime.py` (currently RAISES for c3!=0). It is the exchange
+   Gram between the two shifts — derive the exact $\mathbb{Q}[\tau_2,\tau_3]$
+   integral, do NOT stub it to 0 (that is the C11 bug the prototype carried).
+   Ground-truth check: c3=0 already reproduces weil-first (S2 gate); add a
+   parity/symmetry check on F and a `tau_2=tau_3` consistency check (F must equal
+   E there).
 3. **S4 — profile prime influence FIRST** (the key steer): a cheap mutation-style
    probe of per-sector, per-prime, per-cross-term influence on the Schur pivot.
    Do NOT budget compute symmetrically. Spend hard compute where the pivot moves.
