@@ -259,13 +259,21 @@ def confirm_sector(L: Fraction, sector: str, N: int) -> dict:
     sep_lo = lo_f - hi_o
     sep_hi = hi_f - lo_o
     influence_confirmed = (note_f == "ok" and note_o == "ok" and sep_lo > 0)
+    # Report endpoints as float approximations. The exact certified DECISIONS
+    # (signs, comparisons) are computed on the exact Fractions above; the interval
+    # LDL^T divisions inflate Fraction denominators past Python's 4300-digit str
+    # limit, so we do NOT stringify the exact rationals (they carry no extra
+    # certified information beyond the sign, which the booleans record).
+    def _fapprox(iv):
+        return [float(iv[0]), float(iv[1])]
     return {
         "L": str(L), "sector": sector, "N": N, "d": d, "grade": "certify (Arb interval)",
-        "full_pivot": [str(lo_f), str(hi_f)], "full_pos": pos_f, "full_note": note_f,
-        "cross_off_pivot": [str(lo_o), str(hi_o)], "cross_off_pos": pos_o, "cross_off_note": note_o,
-        "cross_influence_pivot_sep": [str(sep_lo), str(sep_hi)],
+        "endpoint_format": "float approximation of exact-Fraction certified bounds",
+        "full_pivot": _fapprox((lo_f, hi_f)), "full_pos": pos_f, "full_note": note_f,
+        "cross_off_pivot": _fapprox((lo_o, hi_o)), "cross_off_pos": pos_o, "cross_off_note": note_o,
+        "cross_influence_pivot_sep": _fapprox((sep_lo, sep_hi)),
         "cross_influence_confirmed_positive": influence_confirmed,
-        "cross_deltaC_max_abs_lower_bound": str(max_abs_lo),
+        "cross_deltaC_max_abs_lower_bound": float(max_abs_lo),
         "cross_deltaC_certified_nonzero": max_abs_lo > 0,
         "elapsed_s": round(time.time() - t0, 1),
     }
@@ -285,11 +293,13 @@ def main() -> int:
     if not window_check(float(L)):
         print(f"L={L} outside window"); return 2
     results = []
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     for sector in args.sectors.split(","):
         N = args.even_N if sector == "even" else args.odd_N
         results.append(confirm_sector(L, sector, N))
-    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.out).write_text(json.dumps(results, indent=2))
+        # write incrementally so a later-sector crash never loses earlier work
+        Path(args.out).write_text(json.dumps(results, indent=2))
+        print(f"[saved] {sector} written to {args.out}", flush=True)
     print(f"\nCertify-grade cross-term confirmation written to {args.out}", flush=True)
     for r in results:
         print(f"  {r['sector']}: cross Delta-C max|.|>= {r['cross_deltaC_max_abs_lower_bound']} "

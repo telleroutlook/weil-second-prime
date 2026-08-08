@@ -53,12 +53,24 @@ with cross-prime coupling $J_{ij}(\tau_2,\tau_3)$, $\tau_p=\log p / L$.
 
 ## Long-running computation requirements (inherited)
 
-Any computation > 30s MUST be: (1) **observable** — `print(..., flush=True)` per
-unit of work, format `[sector] step N/total (elapsed Xs)`; (2) **pausable** —
-catch KeyboardInterrupt, save a JSON checkpoint; (3) **resumable** — `--resume`
-loads the latest checkpoint and skips completed work. The second-window
-integrals are heavier ($c_L\approx1.82$, two shifts); certify-grade runs are
-long. Use `~/.local/bin/run_and_wait.sh -t <sec> -- <cmd>`; never bare `&`.
+Any computation > 30s MUST be all three of (non-negotiable; a long task missing
+any one is a process defect to fix before the run counts):
+
+1. **observable** — `print(..., flush=True)` per unit of work, format
+   `[sector] step N/total (elapsed Xs)`. A silent multi-minute run is unacceptable.
+2. **pausable** — catch KeyboardInterrupt, save a JSON checkpoint on the way out.
+3. **resumable** — `--resume` loads the latest checkpoint and skips completed
+   work (never recompute a finished sector/L point).
+4. **incremental-durable** — write results to disk after EACH completed unit
+   (per sector / per L point), not only at the end. A crash or str/serialization
+   error in a later unit must never destroy an earlier unit's completed compute.
+   (Learned 2026-08-08: a certify run lost a finished even sector because JSON was
+   emitted only after both sectors; now each sector is written as it completes.)
+
+The second-window integrals are heavier ($c_L\approx1.82$, two shifts);
+certify-grade runs are long (a single N=8 interval build is ~8 min; a full
+even+odd cross-term certify is ~30–40 min). Use
+`~/.local/bin/run_and_wait.sh -t <sec> -- <cmd>` (foreground-blocking); never bare `&`.
 
 ## Python conventions (inherited)
 
