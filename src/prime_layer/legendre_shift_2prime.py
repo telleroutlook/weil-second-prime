@@ -24,10 +24,12 @@ where
   E_{ij}(tau) = <C_{tau,1} P_j, C_{tau,1} P_i>    (single-shift, in legendre_shift.py)
   F_{ij}(tau_2,tau_3) = <C_{tau_3,1} P_j, C_{tau_2,1} P_i>   (cross-prime, NEW — S3).
 
-DISCIPLINE (C11): the cross term F is genuinely new to the two-prime window and
-is NOT yet implemented (S3). This module DOES NOT silently set F=0. When c_3 != 0
-and no F provider is supplied, S2_two_prime RAISES. The single-prime limit
-(c_3 = 0) needs no F and is used by the S2 acceptance self-check.
+DISCIPLINE (C11): the cross term F is genuinely new to the two-prime window.
+It is now implemented exactly (compute_F / default_F_provider). This module still
+NEVER silently sets F=0: S2_two_prime requires an explicit F_provider when
+c_3 != 0 (pass default_F_provider for the real term), else it RAISES. The
+single-prime limit (c_3 = 0) needs no F and is used by the S2 acceptance
+self-check.
 
 Reuses the exact Fraction/Legendre arithmetic from legendre_shift.py.
 """
@@ -38,7 +40,14 @@ import math
 from fractions import Fraction
 from typing import Callable, List, Optional
 
-from .legendre_shift import compute_J, compute_E
+from .legendre_shift import (
+    compute_J,
+    compute_E,
+    legendre_poly,
+    _poly_mul,
+    _poly_shift,
+    _poly_definite_integral,
+)
 
 # ── Prime constants ─────────────────────────────────────────────────────────
 
@@ -70,6 +79,74 @@ def tau3_at(L: float) -> Fraction:
 def window_check(L: float) -> bool:
     """True iff L lies in the second-prime window (1/2 log3, log2)."""
     return LOG3 / 2 < L < LOG2
+
+
+# ── Cross-prime term F (S3, the mathematical heart of the two-prime window) ──
+#
+# The scaled exchange operator (Theorem 1, b -> tau, L -> 1) acts on
+# f in L^2(-1,1) as
+#
+#     (C_{tau,1} f)(x) = 1_{(-1, 1-tau)}(x) f(x+tau)   [forward strip]
+#                      + 1_{(tau-1, 1)}(x) f(x-tau)     [backward strip].
+#
+# The cross-prime Gram is
+#
+#     F_{ij}(tau_2, tau_3) = <C_{tau_3,1} P_j, C_{tau_2,1} P_i>
+#                          = integral_{-1}^{1} (C_{tau_2,1} P_i)(x) (C_{tau_3,1} P_j)(x) dx.
+#
+# Each operator contributes a forward + a backward strip, so the product is a
+# sum of FOUR shift-combinations, each integrated over the intersection of the
+# two strips involved:
+#
+#   A  P_i(x+tau_2) P_j(x+tau_3)  on (-1,           1 - max(tau_2,tau_3))
+#   B  P_i(x+tau_2) P_j(x-tau_3)  on (tau_3 - 1,     1 - tau_2)
+#   C  P_i(x-tau_2) P_j(x+tau_3)  on (tau_2 - 1,     1 - tau_3)
+#   D  P_i(x-tau_2) P_j(x-tau_3)  on (max(tau_2,tau_3) - 1, 1)
+#
+# Every term is in Q[x] (Legendre shift by a rational tau), so F in Q[tau2,tau3].
+# Ground-truth invariants (unit-tested): F_{ij}(tau,tau) == E_{ij}(tau) (same
+# operator both sides), and F_{ij} == 0 for i+j odd (reflection x -> -x gives
+# F = (-1)^{i+j} F). NO term is dropped — omitting one is the C11 bug class.
+
+
+def _strip_integral(
+    pi_shift: Fraction, pj_shift: Fraction, i: int, j: int, lo: Fraction, hi: Fraction
+) -> Fraction:
+    """integral_{lo}^{hi} P_i(x + pi_shift) P_j(x + pj_shift) dx, exact in Q.
+
+    Returns 0 if the domain is empty (lo >= hi)."""
+    if lo >= hi:
+        return Fraction(0)
+    pi = _poly_shift(list(legendre_poly(i)), pi_shift)
+    pj = _poly_shift(list(legendre_poly(j)), pj_shift)
+    product = _poly_mul(pi, pj)
+    return _poly_definite_integral(product, lo, hi)
+
+
+def compute_F(i: int, j: int, tau2: Fraction, tau3: Fraction) -> Fraction:
+    """Cross-prime Gram F_{ij}(tau_2, tau_3) = <C_{tau_3,1} P_j, C_{tau_2,1} P_i>.
+
+    Exact in Q[tau_2, tau_3]. Sums the four shift-combinations A,B,C,D over their
+    (possibly empty) intersection domains. Returns 0 when i+j is odd (parity).
+    """
+    if (i + j) % 2 != 0:
+        return Fraction(0)
+    one = Fraction(1)
+    tmax = max(tau2, tau3)
+    # A: P_i(x+tau2) P_j(x+tau3) on (-1, 1 - max(tau2,tau3))
+    A = _strip_integral(tau2, tau3, i, j, -one, one - tmax)
+    # B: P_i(x+tau2) P_j(x-tau3) on (tau3 - 1, 1 - tau2)
+    B = _strip_integral(tau2, -tau3, i, j, tau3 - one, one - tau2)
+    # C: P_i(x-tau2) P_j(x+tau3) on (tau2 - 1, 1 - tau3)
+    C = _strip_integral(-tau2, tau3, i, j, tau2 - one, one - tau3)
+    # D: P_i(x-tau2) P_j(x-tau3) on (max(tau2,tau3) - 1, 1)
+    D = _strip_integral(-tau2, -tau3, i, j, tmax - one, one)
+    return A + B + C + D
+
+
+def default_F_provider(i: int, j: int, tau2: Fraction, tau3: Fraction) -> float:
+    """Float wrapper around compute_F, matching the FProvider signature."""
+    return float(compute_F(i, j, tau2, tau3))
 
 
 def M2_two_prime(
@@ -110,10 +187,11 @@ def S2_two_prime(
         S^{(2)}_{ij} = c2^2 E_{ij}(tau_2) + c3^2 E_{ij}(tau_3)
                      + c2 c3 ( F_{ij} + F_{ji} )
 
-    The cross-prime term F is NEW to the two-prime window. This function does
-    NOT fabricate F=0 (that is the C11 omitted-cross-term bug). When c3 != 0 a
-    real F_provider MUST be supplied, else NotImplementedError is raised. The
-    single-prime limit (c3 = 0) is exact without F and drives the S2 self-check.
+    The cross-prime term F is NEW to the two-prime window and is implemented in
+    compute_F. This function does NOT fabricate F=0 (the C11 omitted-cross-term
+    bug). When c3 != 0 a real F_provider MUST be supplied (pass
+    default_F_provider), else NotImplementedError is raised. The single-prime
+    limit (c3 = 0) is exact without F and drives the S2 self-check.
     """
     tau2 = tau2_at(L)
     tau3 = tau3_at(L)
