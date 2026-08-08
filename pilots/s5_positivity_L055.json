@@ -1,0 +1,32 @@
+[
+  {
+    "L": "11/20",
+    "L_float": 0.55,
+    "sector": "even",
+    "N": 8,
+    "d": 16,
+    "grade": "certify (Arb interval)",
+    "tau3": 1.997476888487472,
+    "single_hop_ok": true,
+    "min_pivot_lower": -0.0003869023214723633,
+    "min_pivot_upper": 0.00024280136649414727,
+    "min_pivot_note": "straddle",
+    "positive_definite": false,
+    "elapsed_s": 493.3
+  },
+  {
+    "L": "11/20",
+    "L_float": 0.55,
+    "sector": "odd",
+    "N": 7,
+    "d": 15,
+    "grade": "certify (Arb interval)",
+    "tau3": 1.997476888487472,
+    "single_hop_ok": true,
+    "min_pivot_lower": -0.028154923815669364,
+    "min_pivot_upper": -0.017203673970628084,
+    "min_pivot_note": "straddle",
+    "positive_definite": false,
+    "elapsed_s": 313.3
+  }
+]

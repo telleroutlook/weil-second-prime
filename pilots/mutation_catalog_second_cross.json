@@ -1,0 +1,50 @@
+{
+  "checker": "checker/second_prime/check_cross_structure.py",
+  "baseline_certifies": true,
+  "n_mutants": 8,
+  "n_killed": 8,
+  "kill_rate_pct": 100.0,
+  "results": [
+    {
+      "mutant": "zero_tau2_shift",
+      "checker_passed": false,
+      "killed": true
+    },
+    {
+      "mutant": "zero_tau3_shift",
+      "checker_passed": false,
+      "killed": true
+    },
+    {
+      "mutant": "drop_cross_term_F",
+      "checker_passed": false,
+      "killed": true
+    },
+    {
+      "mutant": "skk_only_S0",
+      "checker_passed": false,
+      "killed": true
+    },
+    {
+      "mutant": "window_out_high_L>log2",
+      "checker_passed": false,
+      "killed": true
+    },
+    {
+      "mutant": "window_out_low_L<half_log3",
+      "checker_passed": false,
+      "killed": true
+    },
+    {
+      "mutant": "wrong_primes_single",
+      "checker_passed": false,
+      "killed": true
+    },
+    {
+      "mutant": "wrong_method_first_window",
+      "checker_passed": false,
+      "killed": true
+    }
+  ],
+  "catalog_digest": "025277f64b5c0c48281136dcd0b7ffe00e287d123cec8f6dd94420dee09257b9"
+}

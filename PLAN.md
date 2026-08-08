@@ -48,8 +48,8 @@ $J_{ij}(\tau_2,\tau_3)$，$\tau_p=\log p/L$。$c_L$ 在窗口右端约 1.82。
 | S1 | 仓库脚手架（README/CLAUDE/PLAN/HANDOFF/骨架目录） | ✅ 完成 |
 | S2 | 移植共享机件：archimedean 积分器、interval、ldlt、log_moments、kernel + **单素数极限自检** | ✅ 完成 |
 | S3 | 双平移素数层 `legendre_shift_2prime.py`（从 weil-first 原型移入并补全交叉项） | ✅ 完成 |
-| S4 | **首要发现动作**：per-sector 素数影响 profile（廉价 mutation 式探针，**certify 级精度**） | ⬜ |
-| S5 | 第二窗口 schema + domain + 第一份 pilot 证书骨架 | ⬜ |
+| S4 | **首要发现动作**：per-sector 素数影响 profile（廉价 mutation 式探针，**certify 级精度**） | ✅ 完成 |
+| S5 | 第二窗口 schema + domain + 第一份 pilot 证书骨架 | ✅ 完成 |
 
 > **S4 是最重要的短期动作**（来自 weil-first 实测 steer）：第一窗口 even 扇区素数项
 > M2 近乎惰性（归零仅移 pivot 0.003）——真实的"素数 vs 零"张力（RH 关心的）不在 even

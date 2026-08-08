@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "certificate-second-prime-v1",
+  "title": "Weil second-prime exact two-shift split certificate contract",
+  "description": "Certificate-first contract for the second-prime window (1/2 log3, log2). The certificate carries frozen parameters and identities ONLY. Matrices, eigenvalues, pivots, cross-term magnitudes, positivity conclusions and any self-reported numeric result are deliberately absent and rejected as unknown fields (additionalProperties:false); the checker recomputes them. Two-prime specific: both prime shifts (tau_2, tau_3) and the cross-prime term F must be declared present.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "claim_id",
+    "format_version",
+    "method",
+    "window",
+    "radius",
+    "sector",
+    "N",
+    "tail_degree",
+    "index_set",
+    "eta",
+    "primes",
+    "prime_layer",
+    "archimedean_base",
+    "theorem_contract_sha256"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "const": "thm-second-cross-structure"
+    },
+    "format_version": {
+      "type": "string",
+      "const": "second-prime-1.0"
+    },
+    "method": {
+      "type": "string",
+      "const": "exact_two_prime_split_v1"
+    },
+    "window": {
+      "type": "string",
+      "const": "half_log3_lt_L_lt_log2",
+      "description": "Second-prime window (1/2 log3, log2); both n=2,3 in single-hop regime."
+    },
+    "radius": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator"],
+      "properties": {
+        "numerator": {"type": "integer", "minimum": 1},
+        "denominator": {"type": "integer", "minimum": 1}
+      },
+      "description": "L as an exact rational strictly inside the window; the checker verifies 1/2 log3 < L < log2 by certified rational bounds, not enumeration."
+    },
+    "sector": {
+      "type": "string",
+      "enum": ["even", "odd"]
+    },
+    "N": {"type": "integer", "minimum": 1},
+    "tail_degree": {
+      "type": "integer",
+      "description": "First complement degree d = 2N (even) / 2N+1 (odd). The checker verifies d matches sector+N."
+    },
+    "index_set": {
+      "type": "array",
+      "items": {"type": "integer", "minimum": 0},
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "eta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator"],
+      "properties": {
+        "numerator": {"type": "integer", "const": 1},
+        "denominator": {"type": "integer", "const": 2}
+      }
+    },
+    "primes": {
+      "type": "array",
+      "description": "The two primes in the single-hop regime. Must be exactly [2, 3]; the checker rejects any other set (guards against a first-window single-prime certificate masquerading as second-window).",
+      "items": {"type": "integer"},
+      "const": [2, 3]
+    },
+    "prime_layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shift_tau2", "shift_tau3", "cross_term_F"],
+      "description": "Declares that BOTH prime shifts and the cross-prime term are present. Omitting any is the C11 bug class; the checker rejects a certificate that declares any of these absent, AND recomputes to confirm each is actually present and nonzero.",
+      "properties": {
+        "shift_tau2": {"type": "string", "const": "present"},
+        "shift_tau3": {"type": "string", "const": "present"},
+        "cross_term_F": {"type": "string", "const": "present"}
+      }
+    },
+    "archimedean_base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checker_sha256", "S0_definition"],
+      "properties": {
+        "checker_sha256": {"$ref": "#/definitions/sha256"},
+        "S0_definition": {
+          "type": "string",
+          "const": "S_VV+S_VK+S_KV+S_KK",
+          "description": "Full four-term second moment. S_KK-only is the retired inflation bug and is rejected."
+        }
+      }
+    },
+    "theorem_contract_sha256": {"$ref": "#/definitions/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"sector": {"const": "even"}}, "required": ["sector"]},
+      "then": {"properties": {"tail_degree": {"description": "d = 2N for even"}}}
+    }
+  ],
+  "definitions": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "contract_version": "2",
+  "claim_id": "thm-second-cross-structure",
+  "statement_text": "Second-prime-window cross-term structure: in the window (1/2 log3, log2), with both primes p=2,3 in the single-hop regime, the cross-prime term F_{ij}(tau_2,tau_3) = <C_{tau_3,1} P_j, C_{tau_2,1} P_i> is a REAL, NONZERO contribution to the two-prime Schur second moment S^{(2)} = c_2^2 E(tau_2) + c_3^2 E(tau_3) + c_2 c_3 (F_ij + F_ji). Concretely, Delta C = C_full - C_cross_off = -3 c_2 c_3 (F_ij + F_ji) is nonzero at Arb grade (S4 metric A). This is the genuine new structure the first window does not contain (method-range extension). This is a finite-scale structural statement, bounded to L < log2, and does NOT claim positive-definiteness of the second window (at the left end L=11/20 the odd sector is certifiably negative and the even sector straddles zero) and does NOT imply RH.",
+  "statement_digest": "sha256:ef1bdabca24891c687c80fde89ed20c0ec0c7e3904743c088c9fd45091007d9a",
+  "dependencies": [],
+  "evidence": {
+    "mode": "joint",
+    "required": []
+  },
+  "checker": {
+    "protocol": "proofctl-checker/v2",
+    "checker_digest": "sha256:e7b919c968b063f65cdf0ec3d0a09f7a1a9061d69db66e54e1f286cd6c1154b6",
+    "schema_digest": "sha256:1c693f4b6947edc29908b71bcb3de2cc75d7dced262a5e4efe0c8e793fbc5fe6"
+  },
+  "runtime": {
+    "class": "scripted",
+    "network": "none"
+  },
+  "obligations": [
+    "second.cross-term-present-and-nonzero",
+    "second.both-shifts-present",
+    "second.window-bounds-hold",
+    "second.four-term-S0-declared",
+    "second.positivity-not-claimed",
+    "second.conclusion-bounded-and-no-rh"
+  ],
+  "assurance": {
+    "required": [
+      "deterministic-cap",
+      "exact-replay"
+    ]
+  },
+  "replay": {
+    "semantic": "required",
+    "byte_exact": "required"
+  },
+  "replay_profile": "semantic",
+  "independence": {}
+}

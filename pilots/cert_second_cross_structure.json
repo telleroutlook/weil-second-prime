@@ -1,0 +1,41 @@
+{
+  "N": 8,
+  "archimedean_base": {
+    "S0_definition": "S_VV+S_VK+S_KV+S_KK",
+    "checker_sha256": "e7b919c968b063f65cdf0ec3d0a09f7a1a9061d69db66e54e1f286cd6c1154b6"
+  },
+  "claim_id": "thm-second-cross-structure",
+  "eta": {
+    "denominator": 2,
+    "numerator": 1
+  },
+  "format_version": "second-prime-1.0",
+  "index_set": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14
+  ],
+  "method": "exact_two_prime_split_v1",
+  "prime_layer": {
+    "cross_term_F": "present",
+    "shift_tau2": "present",
+    "shift_tau3": "present"
+  },
+  "primes": [
+    2,
+    3
+  ],
+  "radius": {
+    "denominator": 20,
+    "numerator": 11
+  },
+  "sector": "even",
+  "tail_degree": 16,
+  "theorem_contract_sha256": "c78e0a0b59988d9ba607284b6ce9321926141e6ce78137b3b04797452b929dc8",
+  "window": "half_log3_lt_L_lt_log2"
+}
