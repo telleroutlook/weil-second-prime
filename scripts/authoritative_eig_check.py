@@ -112,8 +112,12 @@ def main() -> int:
     prev.append(r)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(prev, indent=2))
-    print(f"\n[auth] eig_full_min={r['eig_full_min']:+.6f} vs report {r['report_claim_eig_full']:+.6f}; "
-          f"Delta_lambda={r['Delta_lambda_midpoint']:+.6f} vs report {r['report_claim_Delta_lambda']:+.6f}", flush=True)
+    rc_e = r["report_claim_eig_full"]
+    rc_d = r["report_claim_Delta_lambda"]
+    rc_e_s = f"{rc_e:+.6f}" if rc_e is not None else "n/a"
+    rc_d_s = f"{rc_d:+.6f}" if rc_d is not None else "n/a"
+    print(f"\n[auth] eig_full_min={r['eig_full_min']:+.6f} vs report {rc_e_s}; "
+          f"Delta_lambda={r['Delta_lambda_midpoint']:+.6f} vs report {rc_d_s}", flush=True)
     return 0
 
 
