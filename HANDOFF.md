@@ -1,12 +1,15 @@
 # Handoff — weil-second-prime (scaffold, 2026-08-08)
 
 ## 1. One-line status
-S2 DONE (2026-08-08). Shared archimedean machinery + single-prime layer ported
-verbatim from weil-first (82 upstream tests + 16 new self-check tests = 98 pass).
-The S2 acceptance gate — single-prime-limit self-check — PASSES: with prime 3
-switched off (c3=0), the two-prime layer reproduces weil-first's assembled Schur
-matrix element-wise (max|dC| = 0.00e+00, exact). Next: S3 (cross-prime term F).
-**Scope: finite-scale positivity, does NOT imply RH.**
+S2–S6 DONE (2026-08-08). The pipeline is complete: archimedean machinery ported
+(S2, single-prime-limit self-check exact max|dC|=0); cross-prime term F implemented
++ 4 invariants (S3); cross term certified as the second window's real new structure
+(S4, metric A max|ΔC|≥0.63/0.14 at Arb grade); schema+domain+checker+pilot cert
+(S5, CERTIFIED); full proofctl integration (S6, claim ACCEPTED, release --dry-run
+PASS, C01–C11 all green). 131 python tests pass.
+**Honest boundaries (strictly separate): cross-term significant = CERTIFIED;
+second window positive-definite = FALSE at left end L=11/20 (odd certifiably
+negative, even indeterminate); RH = no implication. Scope: finite-scale, L<log2.**
 
 ## 2. What exists now
 - `README.md`, `CLAUDE.md`, `PLAN.md`, this file — identity, rules, plan.

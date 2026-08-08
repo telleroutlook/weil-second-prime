@@ -50,6 +50,16 @@ $J_{ij}(\tau_2,\tau_3)$，$\tau_p=\log p/L$。$c_L$ 在窗口右端约 1.82。
 | S3 | 双平移素数层 `legendre_shift_2prime.py`（从 weil-first 原型移入并补全交叉项） | ✅ 完成 |
 | S4 | **首要发现动作**：per-sector 素数影响 profile（廉价 mutation 式探针，**certify 级精度**） | ✅ 完成 |
 | S5 | 第二窗口 schema + domain + 第一份 pilot 证书骨架 | ✅ 完成 |
+| S6 | proofctl 全链集成：init + graph/policy + 真 generator(C10) + checker mutation(C11) + release gate | ✅ 完成 |
+
+> **S6 结果（2026-08-08）**：claim `thm-second-cross-structure` 经 proofctl
+> replay→verify **ACCEPTED**，`release --dry-run` **PASS**（C01–C11 全绿 + 5 个
+> metadata key 全绿，无 blocker）。与第一窗口逼出 C10/C11 内核条件不同，第二窗口未逼出
+> 新内核条件，但暴露一个 proofctl **集成鲁棒性 bug**：replay 把 attestation metadata
+> 反序列化成 `map[string]string`，任一非字符串值（float 100.0）会使整个 metadata map
+> 静默丢弃（连带 obligation_results）→ 释放门以 "meta:X not verified" 阻塞。已**上游修复**
+> （proofctl commit 86374a7：改 `map[string]json.RawMessage` + 强制转字符串，真解析错误
+> 时告警），重建部署二进制至 `~/bin/proofctl`。记入方法论论文续篇。
 
 > **S4 是最重要的短期动作**（来自 weil-first 实测 steer）：第一窗口 even 扇区素数项
 > M2 近乎惰性（归零仅移 pivot 0.003）——真实的"素数 vs 零"张力（RH 关心的）不在 even

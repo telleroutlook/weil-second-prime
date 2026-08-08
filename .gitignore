@@ -40,6 +40,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Serena (per-project cache/config, not proof artifacts)
+.serena/
+
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb
