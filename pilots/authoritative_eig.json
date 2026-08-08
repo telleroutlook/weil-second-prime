@@ -1,0 +1,31 @@
+[
+  {
+    "L": "3/5",
+    "L_float": 0.6,
+    "sector": "even",
+    "N": 8,
+    "d": 16,
+    "grade": "trusted-assembly midpoint (eig float, pivot certify)",
+    "pivot_full": [
+      -0.019696621902847072,
+      -0.019680034555609696
+    ],
+    "pivot_full_note": "straddle",
+    "pivot_off": [
+      -0.5264878336659663,
+      -0.23133625502159566
+    ],
+    "pivot_off_note": "straddle",
+    "eig_full_min": -0.23084282596000574,
+    "eig_full_2nd": -0.06486064996115469,
+    "eig_off_min": -0.27713573980455886,
+    "eig_off_2nd": -0.1743615619690583,
+    "gap_full": 0.16598217599885107,
+    "gap_off": 0.10277417783550055,
+    "Delta_lambda_midpoint": 0.04629291384455311,
+    "max_interval_radius_full": 1.2500609512225772e-05,
+    "report_claim_eig_full": 0.07689,
+    "report_claim_Delta_lambda": 0.19521,
+    "elapsed_s": 1570.7
+  }
+]
