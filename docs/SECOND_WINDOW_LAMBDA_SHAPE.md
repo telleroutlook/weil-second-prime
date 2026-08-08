@@ -127,7 +127,8 @@ the second. **Same shape, shorter reach** — consistent with the S5 boundary re
 - `pilots/shape_even_N8_merged.json` — even N8 curve (22 pts)
 - `pilots/shape_odd_N7.json` — odd N7 curve (9 pts, fills the S5 data gap)
 - `pilots/dref_even_N6.json`, `dref_even_N10.json`, `dref_odd_N6.json` — d-refinement
-- `pilots/shape_certify_anchor_even.json` (even L=0.67, FULL variant only — the OFF
-  build hit walltime; the FULL certify result is complete and reproduces the pilot
-  eigenvalue center), `shape_certify_anchor_odd.json` (odd L=0.69)
+- `pilots/shape_certify_anchor.json` (even L=0.67, `--full-only`: FULL certify variant,
+  eig_min=−0.285959, pivot [−0.0631,−0.0630]; the OFF variant is not needed for the shape
+  anchor and its interval LDL$^\mathsf{T}$ exceeds walltime at this L-denominator, so it is
+  honestly skipped), `shape_certify_anchor_odd.json` (odd L=0.69)
 - `scripts/shape_scan_parallel.py` — parallel pilot driver (incremental-durable, --resume)

@@ -56,7 +56,7 @@ def _max_radius(C):
     return r
 
 
-def check_point(L: Fraction, sector: str, N: int) -> dict:
+def check_point(L: Fraction, sector: str, N: int, full_only: bool = False) -> dict:
     parity = 0 if sector == "even" else 1
     indices = list(range(parity, parity + 2 * N, 2))
     d = 2 * N + parity
@@ -70,6 +70,28 @@ def check_point(L: Fraction, sector: str, N: int) -> dict:
     print(f"[auth {sector} N={N}] FULL: pivot in [{float(lo_f):.6e},{float(hi_f):.6e}] "
           f"(S4 ref -0.0197) | eig_min={ef[0]:+.6f} eig_2nd={ef[1]:+.6f} maxrad={radf:.2e} "
           f"({time.time()-t0:.0f}s)", flush=True)
+
+    if full_only:
+        # The cross_off variant is NOT needed for the shape anchor (it only served
+        # the retired dominance/cross-influence Delta-lambda comparison). At larger
+        # L-denominators its interval LDL^T blows up Fraction denominators and can
+        # exceed any walltime; skip it so the FULL certify result reliably lands on
+        # disk. Off-dependent fields are set to None (honestly absent, not faked).
+        return {
+            "L": str(L), "L_float": float(L), "sector": sector, "N": N, "d": d,
+            "grade": "trusted-assembly midpoint (eig float, pivot certify) — FULL only",
+            "full_only": True,
+            "pivot_full": [float(lo_f), float(hi_f)], "pivot_full_note": note_f,
+            "pivot_off": None, "pivot_off_note": "skipped (full_only)",
+            "eig_full_min": float(ef[0]), "eig_full_2nd": float(ef[1]),
+            "eig_off_min": None, "eig_off_2nd": None,
+            "gap_full": float(ef[1] - ef[0]), "gap_off": None,
+            "Delta_lambda_midpoint": None,
+            "max_interval_radius_full": radf,
+            "report_claim_eig_full": {"N6": 0.08341, "N8": 0.07689}.get(f"N{N}"),
+            "report_claim_Delta_lambda": {"N6": 0.19526, "N8": 0.19521}.get(f"N{N}"),
+            "elapsed_s": round(time.time() - t0, 1),
+        }
 
     print(f"[auth {sector} N={N}] build_C_interval OFF...", flush=True)
     Co = build_C_interval(indices, L, d, include_cross=False)
@@ -101,12 +123,15 @@ def main() -> int:
     ap.add_argument("--sector", default="even")
     ap.add_argument("--N", type=int, default=8)
     ap.add_argument("--out", default="pilots/authoritative_eig.json")
+    ap.add_argument("--full-only", action="store_true",
+                    help="Skip the cross_off variant (not needed for the shape anchor; "
+                         "its interval LDL^T can exceed walltime at large L-denominators).")
     args = ap.parse_args()
     num, den = (int(x) for x in args.L.split("/"))
     L = Fraction(num, den)
     if not window_check(float(L)):
         print(f"L={L} outside window"); return 2
-    r = check_point(L, args.sector, args.N)
+    r = check_point(L, args.sector, args.N, full_only=args.full_only)
     out = Path(args.out)
     prev = json.loads(out.read_text()) if out.exists() else []
     prev.append(r)
@@ -116,8 +141,10 @@ def main() -> int:
     rc_d = r["report_claim_Delta_lambda"]
     rc_e_s = f"{rc_e:+.6f}" if rc_e is not None else "n/a"
     rc_d_s = f"{rc_d:+.6f}" if rc_d is not None else "n/a"
+    dlam = r["Delta_lambda_midpoint"]
+    dlam_s = f"{dlam:+.6f}" if dlam is not None else "n/a (full_only)"
     print(f"\n[auth] eig_full_min={r['eig_full_min']:+.6f} vs report {rc_e_s}; "
-          f"Delta_lambda={r['Delta_lambda_midpoint']:+.6f} vs report {rc_d_s}", flush=True)
+          f"Delta_lambda={dlam_s} vs report {rc_d_s}", flush=True)
     return 0
 
 
