@@ -1,0 +1,82 @@
+[
+  {
+    "L": 0.6,
+    "L_num": 3,
+    "L_den": 5,
+    "sector": "even",
+    "N": 6,
+    "d": 12,
+    "eta": 0.5,
+    "cross_scale": 100.0,
+    "variants": {
+      "full": {
+        "min_pivot": -0.09558131442021739,
+        "b_L": -0.05633948026553215
+      },
+      "tau2_off": {
+        "min_pivot": -0.10153188623522291,
+        "b_L": -0.05633948026553215
+      },
+      "tau3_off": {
+        "min_pivot": -0.0706955405387878,
+        "b_L": -0.05633948026553215
+      },
+      "cross_off": {
+        "min_pivot": -0.29169755657990576,
+        "b_L": -0.05633948026553215
+      },
+      "scale_cross": {
+        "min_pivot": -62.50422753145234,
+        "b_L": -0.05633948026553215
+      }
+    },
+    "influence": {
+      "d_tau2": 0.005950571815005523,
+      "d_tau3": -0.024885773881429596,
+      "d_cross": 0.19611624215968837,
+      "d_scale_cross": -62.40864621703212
+    },
+    "grade": "PILOT (float center, depth=4) \u2014 directional verdicts need certify",
+    "elapsed_s": 223.8
+  },
+  {
+    "L": 0.6,
+    "L_num": 3,
+    "L_den": 5,
+    "sector": "odd",
+    "N": 6,
+    "d": 13,
+    "eta": 0.5,
+    "cross_scale": 100.0,
+    "variants": {
+      "full": {
+        "min_pivot": -0.07915219110474027,
+        "b_L": 0.020583596657544945
+      },
+      "tau2_off": {
+        "min_pivot": -0.046790368554382684,
+        "b_L": 0.020583596657544945
+      },
+      "tau3_off": {
+        "min_pivot": -0.047794456836348996,
+        "b_L": 0.020583596657544945
+      },
+      "cross_off": {
+        "min_pivot": -0.4492388690243082,
+        "b_L": 0.020583596657544945
+      },
+      "scale_cross": {
+        "min_pivot": -13.925096779334186,
+        "b_L": 0.020583596657544945
+      }
+    },
+    "influence": {
+      "d_tau2": -0.032361822550357584,
+      "d_tau3": -0.03135773426839127,
+      "d_cross": 0.37008667791956795,
+      "d_scale_cross": -13.845944588229447
+    },
+    "grade": "PILOT (float center, depth=4) \u2014 directional verdicts need certify",
+    "elapsed_s": 208.1
+  }
+]

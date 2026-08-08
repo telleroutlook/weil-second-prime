@@ -1,0 +1,82 @@
+[
+  {
+    "L": 0.6,
+    "L_num": 3,
+    "L_den": 5,
+    "sector": "even",
+    "N": 8,
+    "d": 16,
+    "eta": 0.5,
+    "cross_scale": 100.0,
+    "variants": {
+      "full": {
+        "min_pivot": -0.03627406980291773,
+        "b_L": 0.221178834752783
+      },
+      "tau2_off": {
+        "min_pivot": -0.03640832667844286,
+        "b_L": 0.221178834752783
+      },
+      "tau3_off": {
+        "min_pivot": -0.02506531622254728,
+        "b_L": 0.221178834752783
+      },
+      "cross_off": {
+        "min_pivot": -0.23134758371528277,
+        "b_L": 0.221178834752783
+      },
+      "scale_cross": {
+        "min_pivot": -62.42833454484938,
+        "b_L": 0.221178834752783
+      }
+    },
+    "influence": {
+      "d_tau2": 0.00013425687552513083,
+      "d_tau3": -0.011208753580370451,
+      "d_cross": 0.19507351391236505,
+      "d_scale_cross": -62.39206047504646
+    },
+    "grade": "PILOT (float center, depth=4) \u2014 directional verdicts need certify",
+    "elapsed_s": 494.5
+  },
+  {
+    "L": 0.6,
+    "L_num": 3,
+    "L_den": 5,
+    "sector": "odd",
+    "N": 7,
+    "d": 15,
+    "eta": 0.5,
+    "cross_scale": 100.0,
+    "variants": {
+      "full": {
+        "min_pivot": -0.157331245786681,
+        "b_L": 0.158678834752783
+      },
+      "tau2_off": {
+        "min_pivot": -0.11369438223222744,
+        "b_L": 0.158678834752783
+      },
+      "tau3_off": {
+        "min_pivot": -0.04436461308843513,
+        "b_L": 0.158678834752783
+      },
+      "cross_off": {
+        "min_pivot": -0.2571926271140477,
+        "b_L": 0.158678834752783
+      },
+      "scale_cross": {
+        "min_pivot": -13.897556103353395,
+        "b_L": 0.158678834752783
+      }
+    },
+    "influence": {
+      "d_tau2": -0.043636863554453564,
+      "d_tau3": -0.11296663269824588,
+      "d_cross": 0.09986138132736672,
+      "d_scale_cross": -13.740224857566714
+    },
+    "grade": "PILOT (float center, depth=4) \u2014 directional verdicts need certify",
+    "elapsed_s": 314.8
+  }
+]
