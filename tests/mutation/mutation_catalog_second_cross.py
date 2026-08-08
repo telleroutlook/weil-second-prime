@@ -101,16 +101,18 @@ def run_catalog() -> dict:
         is_killed = not passed
         killed += int(is_killed)
         results.append({"mutant": name, "checker_passed": passed, "killed": is_killed})
-    kill_rate = 100.0 * killed / len(MUTANTS)
+    kill_rate = killed / len(MUTANTS)  # fraction in [0,1]
     catalog = {
         "checker": "checker/second_prime/check_cross_structure.py",
         "baseline_certifies": base_pass,
         "n_mutants": len(MUTANTS),
         "n_killed": killed,
-        "kill_rate_pct": kill_rate,
+        "kill_rate": kill_rate,
+        # C11 (proofctl) expects the string "100%" form in attestation metadata.
+        "kill_rate_pct": f"{int(round(kill_rate * 100))}%",
         "results": results,
     }
-    catalog["catalog_digest"] = hashlib.sha256(
+    catalog["catalog_digest"] = "sha256:" + hashlib.sha256(
         json.dumps(catalog, sort_keys=True).encode()
     ).hexdigest()
     return catalog
@@ -122,5 +124,5 @@ if __name__ == "__main__":
     out.write_text(json.dumps(cat, indent=2))
     print(json.dumps(cat, indent=2))
     print(f"\nbaseline_certifies={cat['baseline_certifies']} "
-          f"kill_rate={cat['kill_rate_pct']:.1f}% ({cat['n_killed']}/{cat['n_mutants']})")
-    raise SystemExit(0 if (cat["baseline_certifies"] and cat["kill_rate_pct"] == 100.0) else 1)
+          f"kill_rate={cat['kill_rate_pct']} ({cat['n_killed']}/{cat['n_mutants']})")
+    raise SystemExit(0 if (cat["baseline_certifies"] and cat["kill_rate"] == 1.0) else 1)

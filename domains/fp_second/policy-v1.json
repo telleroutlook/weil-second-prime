@@ -1,0 +1,32 @@
+{
+  "version": "2",
+  "target": "thm-second-cross-structure",
+  "allowed_assurances": [
+    "formal-kernel",
+    "deterministic-cap",
+    "exact-replay",
+    "reproducible-computation",
+    "independent-review"
+  ],
+  "forbidden_assurances": [
+    "ai-review",
+    "assumption",
+    "shadow-review"
+  ],
+  "forbidden_runtimes": [
+    "shadow",
+    "native-dev"
+  ],
+  "required_claims": [
+    "thm-second-cross-structure"
+  ],
+  "required_metadata_keys": [
+    "format_version",
+    "method",
+    "grade",
+    "positivity_claimed",
+    "scope"
+  ],
+  "forbid_copy_only_generators": true,
+  "require_checker_mutation_coverage": true
+}

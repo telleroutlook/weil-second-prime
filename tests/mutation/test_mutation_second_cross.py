@@ -22,7 +22,8 @@ def test_baseline_certifies(catalog):
 
 
 def test_kill_rate_100(catalog):
-    assert catalog["kill_rate_pct"] == 100.0, catalog["results"]
+    assert catalog["kill_rate"] == 1.0, catalog["results"]
+    assert catalog["kill_rate_pct"] == "100%"
 
 
 def test_all_mutants_killed(catalog):

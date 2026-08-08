@@ -2,7 +2,7 @@
   "N": 8,
   "archimedean_base": {
     "S0_definition": "S_VV+S_VK+S_KV+S_KK",
-    "checker_sha256": "e7b919c968b063f65cdf0ec3d0a09f7a1a9061d69db66e54e1f286cd6c1154b6"
+    "checker_sha256": "a1b8972c20313cd8173fe77c527d9ca1839359a550027790fe073e9f1930791f"
   },
   "claim_id": "thm-second-cross-structure",
   "eta": {
@@ -36,6 +36,6 @@
   },
   "sector": "even",
   "tail_degree": 16,
-  "theorem_contract_sha256": "c78e0a0b59988d9ba607284b6ce9321926141e6ce78137b3b04797452b929dc8",
+  "theorem_contract_sha256": "a2e67dd4e8132f06be356a56193028dc004dd0f78211017822295ce9f1eee5ef",
   "window": "half_log3_lt_L_lt_log2"
 }

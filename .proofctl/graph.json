@@ -1,0 +1,44 @@
+{
+  "claims": [
+    {
+      "id": "thm-second-cross-structure",
+      "kind": "theorem",
+      "statement": {
+        "text": "Second-prime-window cross-term structure: in the window (1/2 log3, log2), with both primes p=2,3 in the single-hop regime, the cross-prime term F_{ij}(tau_2,tau_3) = <C_{tau_3,1} P_j, C_{tau_2,1} P_i> is a REAL, NONZERO contribution to the two-prime Schur second moment S^{(2)} = c_2^2 E(tau_2) + c_3^2 E(tau_3) + c_2 c_3 (F_ij + F_ji). Concretely, Delta C = C_full - C_cross_off = -3 c_2 c_3 (F_ij + F_ji) is nonzero at Arb grade (S4 metric A). This is the genuine new structure the first window does not contain (method-range extension). This is a finite-scale structural statement, bounded to L < log2, and does NOT claim positive-definiteness of the second window (at the left end L=11/20 the odd sector is certifiably negative and the even sector straddles zero) and does NOT imply RH.",
+        "digest": "sha256:ef1bdabca24891c687c80fde89ed20c0ec0c7e3904743c088c9fd45091007d9a"
+      },
+      "depends_on": [],
+      "required_assurance": [
+        "deterministic-cap"
+      ],
+      "evidence": [
+        "sha256:4503f450ddd888e4179be6c41a6d4a71292db4bcfa8cb535225d751481bb702d"
+      ],
+      "checker_policy": "second-cross-checker"
+    }
+  ],
+  "checkers": [
+    {
+      "id": "second-cross-checker",
+      "protocol_version": 2,
+      "checker_digest": "sha256:a1b8972c20313cd8173fe77c527d9ca1839359a550027790fe073e9f1930791f",
+      "schema_digest": "sha256:1c693f4b6947edc29908b71bcb3de2cc75d7dced262a5e4efe0c8e793fbc5fe6",
+      "runtime": {
+        "kind": "scripted",
+        "cmd": [
+          "python3",
+          "checker/second_prime/check_cross_structure.py"
+        ]
+      },
+      "network": "none"
+    }
+  ],
+  "evidence": [
+    {
+      "media_type": "application/json",
+      "digest": "sha256:4503f450ddd888e4179be6c41a6d4a71292db4bcfa8cb535225d751481bb702d",
+      "size": 817,
+      "path_hint": "pilots/cert_second_cross_structure.json"
+    }
+  ]
+}

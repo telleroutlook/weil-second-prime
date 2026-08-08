@@ -1,0 +1,73 @@
+{
+  "claim_id": "thm-second-cross-structure",
+  "statement_digest": "",
+  "dependency_digests": null,
+  "evidence": null,
+  "checker": {
+    "id": "second-cross-checker",
+    "protocol_version": 2,
+    "checker_digest": "sha256:a1b8972c20313cd8173fe77c527d9ca1839359a550027790fe073e9f1930791f",
+    "schema_digest": "sha256:1c693f4b6947edc29908b71bcb3de2cc75d7dced262a5e4efe0c8e793fbc5fe6",
+    "runtime": {
+      "kind": "scripted",
+      "cmd": [
+        "python3",
+        "checker/second_prime/check_cross_structure.py"
+      ]
+    },
+    "network": "none"
+  },
+  "outcome": "accepted",
+  "assurance": "exact-replay",
+  "resources": {
+    "wall_millis": 237,
+    "cpu_millis": 0,
+    "mem_bytes": 0
+  },
+  "start_freshness": "2026-08-08",
+  "end_freshness": "2026-08-08",
+  "self_digest": "sha256:f622dcddd95599dc28dfe9bfc8783bbf5acf44f27f90b8e8d3be1f241b245960",
+  "metadata": {
+    "checker_exit": "0",
+    "cold_replay_date": "2026-08-08",
+    "digests_fresh": "true",
+    "evidence_count": "1",
+    "evidence_digests": "sha256:4503f450ddd888e4179be6c41a6d4a71292db4bcfa8cb535225d751481bb702d",
+    "format_version": "second-prime-1.0",
+    "generator_cmds": "python3 src/assemble/generate_second_cert.py --out {cert}",
+    "grade": "certify (exact Fraction cross-term recompute)",
+    "method": "exact_two_prime_split_v1",
+    "mutation_catalog_digest": "sha256:6ce5317a55bfc67b92fc8ed59a4ee78bf5805e5accb5e4454454596b67aadebc",
+    "mutation_kill_rate": "100%",
+    "positivity_claimed": "false",
+    "scope": "finite-scale second-window cross-term structure; L\u003clog2; no RH",
+    "semantic_replay": "false"
+  },
+  "replay_mode": "from_scratch",
+  "obligation_results": [
+    {
+      "id": "second.cross-term-present-and-nonzero",
+      "verdict": "pass"
+    },
+    {
+      "id": "second.both-shifts-present",
+      "verdict": "pass"
+    },
+    {
+      "id": "second.window-bounds-hold",
+      "verdict": "pass"
+    },
+    {
+      "id": "second.four-term-S0-declared",
+      "verdict": "pass"
+    },
+    {
+      "id": "second.positivity-not-claimed",
+      "verdict": "pass"
+    },
+    {
+      "id": "second.conclusion-bounded-and-no-rh",
+      "verdict": "pass"
+    }
+  ]
+}

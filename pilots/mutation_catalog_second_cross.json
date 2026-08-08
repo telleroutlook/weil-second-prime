@@ -3,7 +3,8 @@
   "baseline_certifies": true,
   "n_mutants": 8,
   "n_killed": 8,
-  "kill_rate_pct": 100.0,
+  "kill_rate": 1.0,
+  "kill_rate_pct": "100%",
   "results": [
     {
       "mutant": "zero_tau2_shift",
@@ -46,5 +47,5 @@
       "killed": true
     }
   ],
-  "catalog_digest": "025277f64b5c0c48281136dcd0b7ffe00e287d123cec8f6dd94420dee09257b9"
+  "catalog_digest": "sha256:6ce5317a55bfc67b92fc8ed59a4ee78bf5805e5accb5e4454454596b67aadebc"
 }

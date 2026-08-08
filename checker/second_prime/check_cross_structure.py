@@ -142,6 +142,28 @@ def verify(cert: dict) -> tuple[bool, list[bool], str]:
     return all(results), results, "; ".join(msgs)
 
 
+def _mutation_metadata() -> dict:
+    """Expose C11 fields from the committed mutation-catalog artifact.
+
+    References a pre-run, auditable artifact (not re-running the catalog on every
+    check). Absent/invalid artifact -> empty dict, so C11 correctly BLOCKS rather
+    than silently claiming coverage. All values are STRINGS: proofctl replay
+    unmarshals attestation metadata into map[string]string, and a non-string
+    value makes the WHOLE metadata map fail to unmarshal (silently dropping every
+    key). Learned 2026-08-08 from a release gate that saw metadata:null."""
+    art = _ROOT / "pilots" / "mutation_catalog_second_cross.json"
+    try:
+        d = json.loads(art.read_text())
+        if not d.get("baseline_certifies") or d.get("kill_rate") != 1.0:
+            return {}
+        return {
+            "mutation_kill_rate": str(d.get("kill_rate_pct", "")),
+            "mutation_catalog_digest": str(d.get("catalog_digest", "")),
+        }
+    except Exception:
+        return {}
+
+
 def main() -> int:
     # cert path from argv[1] (CLI) or stdin bridge
     cert_path = None
@@ -187,6 +209,7 @@ def main() -> int:
             "grade": "certify (exact Fraction cross-term recompute)",
             "positivity_claimed": "false",
             "scope": "finite-scale second-window cross-term structure; L<log2; no RH",
+            **_mutation_metadata(),
         },
     }
     print(json.dumps(out, indent=2))

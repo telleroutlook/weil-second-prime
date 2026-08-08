@@ -10,7 +10,7 @@
   },
   "checker": {
     "protocol": "proofctl-checker/v2",
-    "checker_digest": "sha256:e7b919c968b063f65cdf0ec3d0a09f7a1a9061d69db66e54e1f286cd6c1154b6",
+    "checker_digest": "sha256:a1b8972c20313cd8173fe77c527d9ca1839359a550027790fe073e9f1930791f",
     "schema_digest": "sha256:1c693f4b6947edc29908b71bcb3de2cc75d7dced262a5e4efe0c8e793fbc5fe6"
   },
   "runtime": {
