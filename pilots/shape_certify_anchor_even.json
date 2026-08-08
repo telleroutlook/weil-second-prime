@@ -1,0 +1,16 @@
+[
+  {
+    "L": "67/100",
+    "L_float": 0.67,
+    "sector": "even",
+    "N": 8,
+    "d": 16,
+    "grade": "trusted-assembly midpoint (eig float, pivot certify) — FULL variant only",
+    "note": "OFF variant not computed (job hit walltime on the unneeded cross_off build); FULL result below is complete at 630s and reproduces the pilot eigenvalue center exactly. Source: /tmp/cert_even67.log.",
+    "pivot_full": [-0.06310157, -0.06305203],
+    "pivot_full_note": "ok",
+    "eig_full_min": -0.285959,
+    "eig_full_2nd": -0.168356,
+    "max_interval_radius_full": 3.73e-05
+  }
+]
