@@ -69,6 +69,37 @@ conflated):
 (certify results: see `pilots/s4_certify_cross_L060.json` once the N=8/7 run
 completes; this section is updated with the interval numbers then.)
 
+### [certify] results at L = 3/5, N=8 (even) / N=7 (odd) — Arb interval
+
+| quantity | even N=8 | odd N=7 |
+|---|---|---|
+| full min-pivot (interval)      | [−0.019697, −0.019680] | [−0.099571, −0.051604] |
+| full positive-definite?        | **No** (note=straddle)  | **No** (note=straddle)  |
+| cross_off min-pivot (interval) | [−0.526488, −0.231336] | [−0.257244, −0.257141] |
+| **Metric A: max\|ΔC\| ≥**       | **0.63037** | **0.13984** |
+| **Metric A: cross term certified nonzero** | **True** | **True** |
+| Metric B: pivot_sep interval   | [+0.21164, +0.50681] | [+0.15757, +0.20564] |
+| Metric B: confirmed_positive   | False (see note) | False (see note) |
+
+**Metric A (primary, robust): CONFIRMED in both sectors.** At certify grade the
+cross term contributes $\max|\Delta C| \ge 0.630$ (even) / $0.140$ (odd), bounded
+away from zero. $J(\tau_2,\tau_3)$ is a **real, nonzero** contribution to the
+second-window Schur matrix — the genuine new structure, now Arb-certified.
+
+**Metric B nuance (do NOT let it weaken A).** The reported pivot_sep interval is
+positive in both sectors (even [+0.21,+0.51], odd [+0.16,+0.21]), i.e. the
+full-min-pivot lower endpoint exceeds the cross_off upper endpoint. But
+`confirmed_positive=False` because the guard requires BOTH variants' pivots to be
+non-straddling, and `full` straddles zero mid-factorization in both sectors (an
+indefinite matrix). So Metric B is reported as indeterminate-by-guard, NOT as a
+negative result. Its technical difficulty (indefinite pivot bands) does not
+weaken Metric A, which is sign-independent (PROOF_CONSTITUTION D3).
+
+**Full positivity: certifiably FALSE at L=0.6.** Both sectors' full min-pivot
+intervals lie strictly below zero. The second window is NOT positive-definite at
+L=0.6 — an independent fact from the cross-term significance, and squarely S5's
+question at other L points.
+
 ## Verdict and S5 steer
 
 **The cross-prime term $J(\tau_2,\tau_3)$ is the second window's genuine new

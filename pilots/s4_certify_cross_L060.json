@@ -1,0 +1,58 @@
+[
+  {
+    "L": "3/5",
+    "sector": "even",
+    "N": 8,
+    "d": 16,
+    "grade": "certify (Arb interval)",
+    "endpoint_format": "float approximation of exact-Fraction certified bounds",
+    "full_pivot": [
+      -0.019696621902847072,
+      -0.019680034555609696
+    ],
+    "full_pos": false,
+    "full_note": "straddle",
+    "cross_off_pivot": [
+      -0.5264878336659663,
+      -0.23133625502159566
+    ],
+    "cross_off_pos": false,
+    "cross_off_note": "straddle",
+    "cross_influence_pivot_sep": [
+      0.2116396331187486,
+      0.5068077991103566
+    ],
+    "cross_influence_confirmed_positive": false,
+    "cross_deltaC_max_abs_lower_bound": 0.63037377848137,
+    "cross_deltaC_certified_nonzero": true,
+    "elapsed_s": 1519.1
+  },
+  {
+    "L": "3/5",
+    "sector": "odd",
+    "N": 7,
+    "d": 15,
+    "grade": "certify (Arb interval)",
+    "endpoint_format": "float approximation of exact-Fraction certified bounds",
+    "full_pivot": [
+      -0.099570943373644,
+      -0.05160357334836835
+    ],
+    "full_pos": false,
+    "full_note": "straddle",
+    "cross_off_pivot": [
+      -0.25724384750324925,
+      -0.2571414254597905
+    ],
+    "cross_off_pos": false,
+    "cross_off_note": "ok",
+    "cross_influence_pivot_sep": [
+      0.1575704820861465,
+      0.2056402741548809
+    ],
+    "cross_influence_confirmed_positive": false,
+    "cross_deltaC_max_abs_lower_bound": 0.13984214239552886,
+    "cross_deltaC_certified_nonzero": true,
+    "elapsed_s": 702.2
+  }
+]
