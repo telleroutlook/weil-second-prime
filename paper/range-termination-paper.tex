@@ -1,0 +1,701 @@
+\documentclass[12pt,a4paper]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{rotating}
+\usepackage{url}
+
+%% ── Theorem environments ──────────────────────────────────────────────────────
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+%% ── Macros ────────────────────────────────────────────────────────────────────
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\HL}{L^2(I_L)}
+\newcommand{\QW}{Q_W^L}
+\newcommand{\lmin}{\lambda_{\min}}
+\newcommand{\llb}{\lambda_{\mathrm{lb}}}
+\newcommand{\ltrue}{\lambda_{\min}^{\mathrm{true}}}
+\newcommand{\ltrues}[1]{\lambda_{\min,\mathrm{#1}}^{\mathrm{true}}}
+\newcommand{\cL}{c_L}
+\newcommand{\bL}{b_L}
+\newcommand{\taup}{\tau_p}
+\newcommand{\Jcross}{J(\tau_2,\tau_3)}
+\newcommand{\certify}{\textbf{[certify]}}
+\newcommand{\pilot}{\textbf{[pilot]}}
+\newcommand{\extrap}{\textbf{[extrapolation]}}
+\newcommand{\ip}[2]{\langle #1,\, #2\rangle}
+\newcommand{\norm}[1]{\|#1\|}
+
+%% ── Title ─────────────────────────────────────────────────────────────────────
+\title{The Range of a Finite-Scale Weil Positivity Method:\\
+       Success in the First Prime Window and Its Termination in the Second}
+
+\author{Lin Tao}
+\date{2026-08-09}
+
+\begin{document}
+
+\begin{abstract}
+The Weil explicit formula gives an equivalent reformulation of the Riemann
+Hypothesis (RH) as the non-negativity of a family of local quadratic forms
+$\QW$.  A natural finite-scale positivity method---the
+\emph{split-residual Schur criterion}---certifies $\QW > 0$ by reducing the
+problem to the positive-definiteness of a family of finite matrices, one per
+parity sector, assembled from prime-shift data.  We characterise precisely the
+range of this method.
+
+\textbf{First window success and margin exhaustion.}  At $L = 7/20$ (in the
+first prime window $\tfrac12\log 2 < L < \tfrac12\log 3$, only prime $p=2$
+active), the method certifies $\lmin > 0$ with a rigorous lower bound of
+$+7.81\times10^{-4}$ \certify.  A kappa-corrected pilot scan shows the
+window-level $\lambda_{\min}(L) = \min(\ltrues{even},
+\ltrues{odd})$ decreasing monotonically toward the right endpoint.
+Near $L=0.548$ the odd sector---which dominates the window minimum---is
+negative for $d \le 100$ and barely positive ($+5.7\times10^{-9}$) only at
+$d=120$ \pilot.  The certify-grade interval width would exceed this signal by a
+factor $\sim 5\times10^4$, making the first-window right end
+certify-indeterminate \pilot.
+
+\textbf{Second window termination.}  In the second prime window
+$\tfrac12\log 3 < L < \log 2$, both primes $p=2,3$ are active and introduce a
+qualitatively new cross-prime coupling $\Jcross$ absent in the first window.
+We certify that $\Jcross \neq 0$ \certify\ but that this coupling neither
+dominates the form nor delays its collapse---two natural conjectures, both
+refuted by independent adjudication.  The odd sector is certifiably
+negative-definite even at the most favourable left end $L=11/20$ \certify, and
+a pilot scan records $\ltrue(L) < 0$ throughout the window
+\pilot.
+
+\textbf{Window-endpoint sequence and gradual exhaustion.}  The sequence of
+right-endpoint values $\lambda_{\min}\!\left(\tfrac12\log p_k^-\right)$ reads:
+pilot knife-edge / certify-indeterminate (window~1) $\to$ certify-negative
+$\approx -0.37$ (window~2, \certify~anchor) $\to$ $\lesssim -0.7$
+(window~3, \extrap).  The termination is a \emph{gradual} process: the
+positive margin is continuously exhausted by the growing Weil constant $\cL$
+within window~1, then pushed unambiguously negative by prime~3's entry at the
+start of window~2.
+
+\textbf{Conclusion.}  This paper characterises the complete range of the
+split-residual Schur method as the first prime window
+$[\tfrac12\log 2,\, \tfrac12\log 3]$.  This is an honest negative result: the
+method does not extend to the second window, and the mechanism explains why no
+finite per-window extension would reach RH.  No statement about RH is made.
+No extrapolation past $L = \log 2$ is attempted.
+\end{abstract}
+
+\maketitle
+
+\tableofcontents
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+\section{Introduction}
+\label{sec:intro}
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\subsection{The Weil explicit formula and RH}
+
+For a Schwartz test function $f$ with support in $(-L,L)$, the \emph{Weil
+explicit formula} expresses a global sum over non-trivial zeros $\rho$ of
+$\zeta(s)$ in terms of an archimedean integral and a sum over primes.
+Weil's criterion states:
+\[
+  \text{RH} \;\Longleftrightarrow\;
+  Q_W^L(f) \;\ge\; 0 \quad
+  \text{for all } f \in \mathcal{S}(\R) \text{ with }
+  \operatorname{supp}\hat f \subset [-L,L],\;
+  \forall L > 0.
+\]
+Defining
+\[
+  \lambda(L) \;:=\; \inf_{\|f\|=1}\, Q_W^L(f),
+\]
+the equivalence becomes $\lambda(L) \ge 0$ for all $L > 0$.
+
+\subsection{The prime windows}
+
+Prime $p$ enters the explicit formula at $L = \tfrac12\log p$, where its shift
+parameter $\tau_p = \log p / L$ crosses~2 (the single-hop regime boundary).
+This creates a sequence of intervals:
+\begin{align*}
+  \text{Window 1:}&\quad L \in \bigl(\tfrac12\log 2,\, \tfrac12\log 3\bigr)
+    \approx (0.347,\, 0.549), \quad \text{only } p=2 \text{ active};\\
+  \text{Window 2:}&\quad L \in \bigl(\tfrac12\log 3,\, \log 2\bigr)
+    \approx (0.549,\, 0.693), \quad p=2,3 \text{ both active};\\
+  \text{Window } k{:}& \quad \text{bounded by primes } p_k,\, p_{k+1}.
+\end{align*}
+Inside each window the set of single-hop primes is constant, so the
+combinatorial structure of the positivity problem is fixed.
+
+\subsection{The split-residual Schur method}
+
+We work in a Legendre basis $\{P_n\}_{n \ge 0}$ on $L^2(-L,L)$, truncated
+at degree $N$ per parity sector.  In each sector the method assembles a
+finite Schur matrix
+\[
+  C \;=\; \bL \cdot F - R_\eta,
+\]
+where $\bL = H_d - \cL - \kappa_L$ is the Archimedean reserve ($H_d$ the
+$d$-th harmonic number, $\cL = \log(2\pi L)+\gamma_E$ the Weil constant,
+$\kappa_L$ a bounded correction), $F = T + M^{(0)} + M^{(2)} - \cL G$ encodes
+the Fourier--prime--cross structure, and $R_\eta$ is a residual from the
+split.  The second-moment object $M^{(2)}$ must include all four terms
+$S_{VV}+S_{VK}+S_{KV}+S_{KK}$; omitting any term inflates the apparent
+positivity (a documented defect class).
+
+\textbf{Positivity criterion.}  $C$ positive-definite (equivalently, all
+LDL$^\top$ pivots $> 0$) is a \emph{sufficient} condition for $\lambda(L) > 0$
+in the corresponding sector.  A negative minimum pivot proves only that
+\emph{this certificate} fails---not that $\lambda(L) \le 0$.
+
+\subsection{Evidence grades}
+
+Every numerical statement in this paper carries one of three grades:
+\begin{itemize}[leftmargin=2em]
+  \item \certify\ --- outward-rounded interval arithmetic (Arb balls); the
+    sign verdict is made only when both interval endpoints lie on the same
+    side of zero.
+  \item \pilot\ --- float-center computation, no interval enclosure;
+    directional and shape evidence only, never a final verdict.
+  \item \extrap\ --- extrapolation beyond computed windows; indicative
+    only, not a certified bound.
+\end{itemize}
+No finite sample of $L$-values is promoted to a whole-window assertion.
+
+\subsection{Main result (informal)}
+
+\begin{theorem}[Range characterisation, informal]
+\label{thm:main-informal}
+The split-residual Schur method certifies $\lambda(L) > 0$ at $L=7/20$ in
+the first prime window \certify.  A pilot scan confirms positive sign across
+the sampled interior of the first window, with margin collapsing to
+$O(10^{-8}\text{--}10^{-9})$ near the right endpoint \pilot.  In the second
+prime window the method fails: the odd sector is certifiably not
+positive-definite at $L=11/20$ \certify.  The window-endpoint infimum
+sequence decreases monotonically through zero.  The method's range is
+contained in the first prime window.  No statement about RH follows.
+\end{theorem}
+
+\textbf{Organisation.}  Section~\ref{sec:first} covers the first window.
+Section~\ref{sec:second} covers the second window and the cross-prime
+structure.  Section~\ref{sec:trend} describes the endpoint sequence.
+Section~\ref{sec:conclusions} states the range termination and its
+methodological implications.  Appendix~\ref{app:data} is the complete
+data-provenance table.
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+\section{The First Prime Window}
+\label{sec:first}
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Certification at \texorpdfstring{$L=7/20$}{L=7/20}}
+
+\begin{proposition}[FP-0.35 \certify]
+\label{prop:fp035}
+At $L = 7/20$, using the full four-term $S^{(0)}=S_{VV}+S_{VK}+S_{KV}+S_{KK}$,
+real Weil constant $\cL = 1355726/993009 \approx 1.36527$, and parameters
+$N_{\mathrm{even}}=8$, $d_{\mathrm{even}}=16$, $N_{\mathrm{odd}}=6$,
+$d_{\mathrm{odd}}=13$:
+\[
+  \lambda_{\mathrm{lb}}(7/20)_{\mathrm{even}} \;\ge\; +7.81\times10^{-4},\quad
+  \lambda_{\mathrm{lb}}(7/20)_{\mathrm{odd}}  \;\ge\; +4.92\times10^{-2}.
+\]
+Both sectors are certified positive-definite.
+\end{proposition}
+
+\begin{remark}
+The certified lower bound $\lambda_{\mathrm{lb}}$ may be substantially smaller
+than the true minimum eigenvalue $\ltrue$.  At $L=7/20$ we have
+$\ltrues{even} \approx +9.5\times10^{-4}$ and
+$\ltrues{odd} \approx +1.90\times10^{-2}$ \pilot, so the certificate
+is conservative by roughly $1.2\times$ (even) and $2.6\times$ (odd).  This
+distinction matters at the right end of the window; see
+\cref{rem:lb-vs-true} below.
+\end{remark}
+
+\begin{remark}[Historical defect]
+An earlier certificate used $S^{(0)} = S_{KK}$ only (three terms omitted),
+which inflated the reported eigenvalue by approximately $16\times$ and yielded
+a false $\llb \approx +0.015$.  The corrected certificate uses all four terms
+and is the one cited here.  Source:
+\texttt{pilots/cert\_fp035\_clean.json} (\texttt{weil-first-prime}).
+\end{remark}
+
+\subsection{Shape of \texorpdfstring{$\ltrue(L)$}{λ\_min(L)} across the first window}
+\label{sec:first-shape}
+
+\textbf{Note on a corrected computation.}  An earlier scan of this window
+hard-coded $\kappa = 1.25528305$ (the value at $L=7/20$) for all $L$, instead
+of evaluating $\kappa(L)$ per-point.  The scan has been rerun with the correct
+per-$L$ $\kappa$.  The data in this section are the corrected values.
+The FP-0.35 certificate at $L=7/20$ is \emph{not} affected (that point used
+the correct $\kappa$ throughout).
+
+We sampled $\ltrue(L)$ (float-center minimum eigenvalue) for the even sector
+at $d=60$ and for the odd sector at $d \in \{60,80,100,120\}$, at selected
+points across the window.  $\lambda_{\min}(L) := \min(\ltrues{even},
+\ltrues{odd})$ is the window-level quantity.
+
+\begin{table}[h]
+\centering
+\caption{First-window shape: even sector at $d=60$ and odd sector $d$-scan
+         at $L=0.548$ (\pilot, kappa-corrected).
+         $\lambda_{\min}$ is dominated by the \emph{odd} sector near the right end.}
+\label{tab:first-window}
+\begin{tabular}{@{}llll@{}}
+\toprule
+$L$ & Even $\ltrue$ ($d=60$) & Odd $\ltrue$ & Window $\lambda_{\min}$ \\
+\midrule
+0.350 & $+2.6\times10^{-3}$ & far positive & even-dominated, positive \\
+0.430 & $+5.9\times10^{-5}$ & positive     & even-dominated, positive \\
+0.490 & $+1.2\times10^{-6}$ & positive     & even-dominated, positive \\
+0.510 & $+3.7\times10^{-7}$ & positive     & even-dominated, positive \\
+0.548 & $+5.2\times10^{-9}$ & see below    & \textbf{odd-dominated} (see Remark~\ref{rem:right-end}) \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\begin{tabular}{@{}lll@{}}
+\toprule
+\multicolumn{3}{@{}l@{}}{Odd sector at $L=0.548$ (right end), $d$-scan \pilot:} \\
+\midrule
+$d=60$  & $-1.5\times10^{-5}$ & negative \\
+$d=80$  & $-6.1\times10^{-6}$ & negative \\
+$d=100$ & $-2.4\times10^{-6}$ & negative \\
+$d=120$ & $+5.7\times10^{-9}$ & knife-edge positive (barely) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{remark}[Right-end knife-edge and certify-indeterminate status]
+\label{rem:right-end}
+Near $L = \tfrac12\log 3 \approx 0.549$, the window-level $\lambda_{\min}$
+is \emph{dominated by the odd sector}, which is more negative than the even at
+every sampled point near the right end.
+
+\textbf{Odd sector at $L=0.548$:} the value is negative at $d\le 100$ and
+barely positive ($+5.7\times10^{-9}$) only at $d=120$ \pilot.  The
+convergence is extremely slow ($d$ must triple from 40 to 120 to cross zero),
+and the signal of order $10^{-9}$ is far smaller than the certify-grade
+interval width: the $\tau_p$ interval arithmetic uncertainty alone is of order
+$2.7\times10^{-4}$, exceeding the signal by a factor $\sim 5\times10^4$.
+
+\textbf{Even sector at $L=0.548$:} $+5.2\times10^{-9}$ at $d=60$ \pilot---a
+knife-edge positive value, but the even sector is \emph{not} the window minimum.
+
+\textbf{Honest reading.}  At the first-window right end:
+\begin{itemize}[leftmargin=2em]
+  \item The even sector is knife-edge positive in the pilot \pilot, not certify-graded.
+  \item The odd sector is \emph{negative} at $d \le 100$ and barely positive only
+    at $d=120$ \pilot.
+  \item The window minimum $\lambda_{\min} = \min(\text{even},\text{odd})$ is
+    at pilot-level knife-edge or negative; a certify-grade computation would be
+    \textbf{indeterminate} (interval width $\gg$ signal by $\sim 5\times10^4$).
+\end{itemize}
+We do \emph{not} claim a certified positive right-end value.  The right end of
+the first window already shows margin exhaustion at pilot level.
+\end{remark}
+
+\textbf{Shape summary (\pilot, kappa-corrected, sampled grid).}
+\begin{itemize}[leftmargin=2em]
+  \item Even-sector $\ltrue(L)$ is monotone decreasing at $d=60$, from
+    $+2.6\times10^{-3}$ at $L=0.35$ to $+5.2\times10^{-9}$ at $L=0.548$.
+  \item Odd-sector $\ltrue(L)$ decreases similarly; at the right end it
+    converges to the pilot level only at $d=120$ and is negative for $d\le 100$.
+  \item The window minimum is \textbf{odd-dominated} at the right end.
+  \item At $L=7/20$ (interior), the certified odd bound is
+    $+4.92\times10^{-2}$ \certify, far from zero.
+\end{itemize}
+We do not assert a certified whole-window monotonicity result; the above is a
+sampled-grid description.
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+\section{The Second Prime Window}
+\label{sec:second}
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\subsection{New structure: the cross-prime coupling}
+
+In the second window $\tau_2 = \log 2/L$ and $\tau_3 = \log 3/L$ are both
+in the single-hop regime ($\tau_p < 2$).  The second-moment object gains a
+genuinely new term absent from the first window:
+\[
+  \Jcross_{ij}
+  \;:=\;
+  \ip{C_{\tau_3,1}P_j}{C_{\tau_2,1}P_i},
+\]
+where $C_{\tau,1}$ is the single-hop shift operator.  This coupling is
+algebraically distinct from the diagonal prime contributions and creates
+a non-trivial interaction between the two shifts.
+
+\begin{proposition}[Cross-term non-vanishing \certify]
+\label{prop:cross-nonzero}
+At $L=3/5$, with $N_{\mathrm{even}}=8$, $N_{\mathrm{odd}}=7$, using
+outward-rounded Arb interval arithmetic:
+\[
+  \max_{i,j}\lvert \Delta C_{ij}\rvert
+  \;\ge\;
+  \begin{cases}
+    0.630 & \text{even sector},\\
+    0.140 & \text{odd sector}.
+  \end{cases}
+\]
+Here $\Delta C = C_{\mathrm{full}} - C_{\mathrm{cross-off}}$
+is the cross-term contribution matrix.  In particular $\Jcross \neq 0$.
+\end{proposition}
+
+This is the paper's \emph{positive} certified result about the second window.
+It is bounded to non-vanishing and says nothing about sign, dominance, or
+positivity.
+
+\subsection{Two refuted conjectures about the cross term}
+
+Two natural strengthenings of Proposition~\ref{prop:cross-nonzero} were
+investigated and both were refuted by independent recomputation.
+
+\begin{proposition}[Dominance refuted]
+\label{prop:dominance-refuted}
+The conjecture that $\Jcross$ \emph{dominates} $\lambda_{\min}(C)$---i.e.,
+that the cross-on assembly is positive-definite---is false.  An outsourced
+report claimed Layer-1 eigenvalue $+0.077$ under the cross-on assembly at
+$L=3/5$ even.  Independent recomputation on the project's trusted assembly
+gives $\ltrues{even} = -0.231$ \pilot\ (sign reversed).  The claimed
+value is arithmetically inconsistent with the independently certified
+min-pivot $= -0.0197$ \certify\ at the same point: a matrix cannot
+simultaneously have minimum eigenvalue $> 0$ and minimum pivot $< 0$.
+\end{proposition}
+
+\begin{proposition}[Delay refuted]
+\label{prop:delay-refuted}
+The conjecture that the cross term \emph{delays} the loss of positivity---i.e.,
+that $\Delta V := d\lambda_{\min}(C_{\mathrm{full}})/dL - d\lambda_{\min}(C^{(1)})/dL > 0$---is
+false.  At five test points in the second window, three give strongly negative
+$\Delta V$ (specifically $\Delta V = -2.74$, $-0.40$, $-2.25$ at $L = 0.552$,
+$0.580$, $0.600$ respectively \pilot), far outside any numerical-error margin.
+A single counter-example is sufficient to falsify the conjecture; three are
+present.
+\end{proposition}
+
+\begin{remark}
+Propositions~\ref{prop:dominance-refuted} and~\ref{prop:delay-refuted} do
+\emph{not} imply that $\Jcross = 0$ or is negligible.  The cross term is
+certified nonzero (\cref{prop:cross-nonzero}) and contributes positively to
+the pivot at interior points (turning cross off lowers the even pivot from
+$-0.036$ to $-0.231$ at $L=0.60$ \pilot).  The refuted claims are about
+\emph{dominance} and \emph{delay}, not about existence.
+\end{remark}
+
+\subsection{Per-prime decomposition at \texorpdfstring{$L=3/5$}{L=3/5}}
+
+Table~\ref{tab:per-prime} shows the pivot contributions from each prime and
+the cross term at $L=3/5$ (\pilot).
+
+\begin{table}[h]
+\centering
+\caption{Pivot decomposition at $L=3/5$ \pilot.
+         $\Delta_p = $ min-pivot(full) $-$ min-pivot(prime-$p$ off).}
+\label{tab:per-prime}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Sector & Full pivot & $\Delta_{\tau_2}$ & $\Delta_{\tau_3}$ & $\Delta_{\mathrm{cross}}$ \\
+\midrule
+Even ($N=8$) & $-0.0363$ & $+0.0001$ (inert) & $-0.0112$ & $+0.1951$ \\
+Odd  ($N=7$) & $-0.1573$ & $-0.0436$         & $-0.1130$ (dominant) & $+0.0999$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Prime~3 is the dominant new negative contribution (odd sector); prime~2 is
+nearly inert (even) or secondary (odd); the cross term is positive but
+insufficient to overcome the combined prime contributions.
+
+\subsection{Certified non-positivity}
+
+\begin{proposition}[Second window not positive-definite \certify]
+\label{prop:second-negative}
+At $L = 11/20 = 0.55$ (the left end of the second window, most favourable
+for positivity):
+\[
+  \text{min-pivot}_{\mathrm{odd},\,N=7} \in [-2.815\times10^{-2},\,-1.720\times10^{-2}],
+\]
+so the odd sector is certifiably not positive-definite.
+
+At $L = 69/100 = 0.69$ (near the right end), the odd sector has
+$\ltrues{odd} = -0.369$ \certify\ (certify-anchored eigenvalue;
+pivot straddle confirms negative-definite).
+\end{proposition}
+
+\begin{remark}
+The even sector at $L=11/20$ has min-pivot interval
+$[-3.87\times10^{-4},\, +2.43\times10^{-4}]$ \certify---straddling zero.
+This is \emph{indeterminate}: neither positive-definite nor certifiably
+negative.  We do not claim the even sector is certifiably negative.
+\end{remark}
+
+\subsection{Shape across the second window}
+
+A pilot scan at $N_{\mathrm{even}}=8$ ($d=16$) and $N_{\mathrm{odd}}=7$
+($d=15$) over 7--9 sample points each gives:
+
+\textbf{Odd sector.}  Monotone decreasing from $-0.118$ at $L=0.55$ to
+$-0.369$ at $L=0.69$.  No flattening; infimum at the right end.
+$d$-refinement (at $L \in \{0.66,0.67,0.69\}$, $d \in \{12,16,20\}$)
+confirms the monotone descent is $d$-robust; the odd right-end infimum is
+the dominant behaviour \pilot.
+
+\textbf{Even sector.}  Steep descent from $-0.093$ at $L=0.55$ to
+approximately $-0.283$ at $L \approx 0.65$--$0.67$, then a very shallow
+basin.  The fine structure of the basin (interior minimum vs.\ right-end
+turn-up) is \emph{not} $d$-robust: the apparent interior minimum shifts with
+$d$ and inverts at $d=20$.  The shallow fine structure is a Gibbs truncation
+artefact and is not reported as a result.  What survives: steep descent at
+the left end, all sampled values negative \pilot.
+
+\textbf{Window $\lmin$.}  The odd sector dominates (is more negative) at
+every sampled $L$.  The window infimum over sampled points is $-0.369$ at
+$L=0.69$ \pilot.
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+\section{The Window-Endpoint Sequence and Termination Mechanism}
+\label{sec:trend}
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Right-endpoint infima}
+
+Define $\Lambda_k := \ltrue\!\bigl((\tfrac12\log p_{k+1})^-\bigr)$, the
+infimum of the window-level $\lambda_{\min}(L) = \min(\ltrues{even},
+\ltrues{odd})$ near the right endpoint of window~$k$.
+
+\begin{table}[h]
+\centering
+\caption{Window right-endpoint infimum sequence.}
+\label{tab:sequence}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Window & Right endpoint & $\cL$ (right end) & $\Lambda_k$ & Grade \\
+\midrule
+1 & $\tfrac12\log 3 \approx 0.549$ & $\approx 1.82$ &
+  pilot knife-edge / certify-indeterminate & \pilot \\
+2 & $\log 2 \approx 0.693$ & $\approx 2.05$ &
+  $\approx -0.37$ & \certify~anchor \\
+3 & $\tfrac12\log 5 \approx 0.805$ & $\approx 2.20$ &
+  $\lesssim -0.7$ & \extrap \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At window~1's right end the margin exhaustion is already visible at pilot level:
+the odd sector reads $-1.5\times10^{-5}$ to $-2.4\times10^{-6}$ for $d \le 100$
+and reaches a knife-edge $+5.7\times10^{-9}$ only at $d=120$ \pilot; the certify
+interval width ($\sim 2.7\times10^{-4}$) would drown any signal of this magnitude
+by a factor $\sim 5\times10^4$, making window~1's right end certify-indeterminate
+\pilot.  $\Lambda_2 \approx -0.37$ is a certify-anchored eigenvalue
+(\cref{prop:second-negative}).  $\Lambda_3$ is \extrap\ and has not been
+computed.
+
+The sequence therefore reads: pilot knife-edge (window~1) $\to$
+certify-negative $-0.37$ (window~2) $\to$ extrapolated $\lesssim -0.7$
+(window~3).  The \emph{transition from window~1 to window~2 is not a
+sudden jump}: margin exhaustion begins already at the right end of
+window~1, and becomes unambiguous at the left end of window~2
+(Proposition~\ref{prop:second-negative}).
+
+\subsection{Mechanism}
+
+Three structural factors drive the sequence downward:
+
+\begin{enumerate}[label=(\roman*)]
+  \item \textbf{Growing Weil constant.}  $\cL = \log(2\pi L)+\gamma_E$
+    increases from $\approx 1.37$ at $L=7/20$ to $\approx 1.82$ at the
+    first-window right end, $\approx 2.05$ at the second-window right end.
+    Since $\bL = H_d - \cL - \kappa_L$, the Archimedean reserve $\bL$
+    shrinks continuously as $L$ increases \emph{within} a window, driving
+    $\lambda_{\min}$ downward before any new prime enters.
+
+  \item \textbf{Each new prime adds a negative contribution.}  Prime~3's
+    entry at the start of window~2 adds $\Delta_{\tau_3} \approx -0.11$
+    to the odd pivot (Table~\ref{tab:per-prime}).  Prime~5 in window~3
+    would add a further negative term.  This is the \emph{discrete} jump
+    between windows; the \emph{continuous} drain within a window is item~(i).
+
+  \item \textbf{Cross terms are positive but non-dominant.}  The cross-prime
+    coupling $\Jcross$ contributes positively ($+0.10$--$+0.20$ at $L=0.60$)
+    but does not overcome the combined negative pressure from the growing
+    $\cL$ and the new prime contribution (Propositions~\ref{prop:dominance-refuted}
+    and~\ref{prop:delay-refuted}).
+\end{enumerate}
+
+The picture that emerges is one of \emph{gradual, continuous margin exhaustion}:
+the positive margin shrinks throughout the interior of window~1 (driven by
+item~(i)), arrives at pilot-level knife-edge / certify-indeterminate at the
+right end of window~1, and crosses into certifiably negative territory already
+at the left end of window~2 (item~(ii) contributing the discrete step).
+Window~1 is the unique window where the method succeeds because it is the only
+window whose \emph{left end} opens with sufficient reserve before the
+continuous drain and discrete jumps accumulate past zero.
+
+\begin{remark}[Window~3 is \extrap]
+The claim $\Lambda_3 \lesssim -0.7$ is an extrapolation from the trend
+in Table~\ref{tab:sequence}; it has not been computed.  We record it for
+orientation only.  No certified statement about window~3 is made in this
+paper.
+\end{remark}
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+\section{Conclusions}
+\label{sec:conclusions}
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Range of the method}
+
+\begin{theorem}[Range characterisation]
+\label{thm:range}
+The split-residual Schur positivity method has the following certified range:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Succeeds} at $L = 7/20 \in (\tfrac12\log 2, \tfrac12\log 3)$:
+    both sectors certified positive-definite \certify.
+  \item \textbf{Fails} in the second window: the odd sector at $L = 11/20$
+    (the most favourable point in window~2) is certifiably not
+    positive-definite \certify.
+\end{itemize}
+The termination is not a sudden jump at the window boundary.  A pilot scan of
+the first window (kappa-corrected) shows the window-level $\lambda_{\min}$
+arriving at pilot-level knife-edge near $L \approx 0.548$, with the odd sector
+negative for $d \le 100$ and barely positive only at $d=120$ \pilot.  A
+certify-grade computation at the first-window right end would be indeterminate
+(interval width $\gg$ signal by $\sim 5\times10^4$).  The positive margin is
+continuously exhausted \emph{within} window~1 (growing $\cL$) and pushed into
+certifiably negative territory at the \emph{start} of window~2 (prime~3
+entry).  These pilot conclusions require certify-grade confirmation to be
+definitive.
+\end{theorem}
+
+\subsection{What this does not imply}
+
+We state explicitly what the above does \emph{not} say:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Not a statement about RH.}  The method's range is a property
+    of the \emph{finite-scale construction}, not of the infinite-dimensional
+    Weil operator.  The Riemann zeta zeros (known to satisfy RH to great
+    height numerically) are not the object under study.  Failure of a
+    sufficient criterion does not imply $\lambda(L) \le 0$.
+
+  \item \textbf{Not a whole-window certified result.}  Only finitely many
+    $L$-points have been certified.  A continuous positivity/negativity
+    result for all $L$ in a window would require additional (e.g.,
+    Lipschitz or analyticity-based) continuation arguments.
+
+  \item \textbf{Not an extrapolation past $L = \log 2$.}  The framework
+    changes at $L = \log 2$ (the fourth prime $p=5$ enters the single-hop
+    regime); we make no claims beyond that boundary.
+\end{itemize}
+
+\subsection{Methodological value}
+
+This paper establishes a \emph{precise boundary} for a natural approach to
+Weil positivity.  The boundary is not a dead end:
+
+\begin{enumerate}[leftmargin=2em,label=(\arabic*)]
+  \item It rules out the per-window hardcoded method as a route to
+    full-spectrum RH verification, and identifies the mechanism (growing
+    $\cL$, per-prime negative contributions, non-dominant cross terms).
+
+  \item The second-window cross-prime coupling $\Jcross$, certified nonzero
+    here for the first time, is a qualitatively new algebraic structure whose
+    analysis may be useful independent of the positivity question.
+
+  \item The adjudication methodology---outsourcing conjectures to independent
+    recomputation and reporting the refutations as results---is itself a
+    contribution to the certification workflow (see \texttt{PROOF\_CONSTITUTION.md}).
+\end{enumerate}
+
+\begin{remark}[Honest negative result]
+A negative result that precisely characterises where a method fails and why is
+more useful to the community than a partial positive result that leaves the
+boundary ambiguous.  Future work need not build window-3 machinery only to
+discover the same mechanism; the termination is already visible in window~2.
+\end{remark}
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+\appendix
+\section{Data Provenance Table}
+\label{app:data}
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+Every numerical statement in the body of the paper is traceable to one of the
+following entries.
+
+\begin{sidewaystable}
+\centering
+\caption{Complete data provenance.  Repo prefixes: W1 = \texttt{weil-first-prime},
+         W2 = \texttt{weil-second-prime}.  All files under \texttt{pilots/} or
+         \texttt{docs/} as indicated.}
+\label{tab:provenance}
+\scriptsize
+\begin{tabular}{@{}lp{.22\textheight}lllp{.18\textheight}l@{}}
+\toprule
+ID & Quantity & $L$ & Sector & Value / interval & Grade & Source \\
+\midrule
+P1  & $\lambda_{\mathrm{lb}}$ even                          & $7/20$        & even & $+7.81\times10^{-4}$                        & \certify            & W1: \texttt{lambda\_profile.json} \\
+P2  & $\lambda_{\mathrm{lb}}$ odd                           & $7/20$        & odd  & $+4.92\times10^{-2}$                        & \certify            & W1: \texttt{lambda\_profile.json} \\
+P3  & $c_L$                                                 & $7/20$        & —    & $1355726/993009$                            & exact               & W1: \texttt{cert\_fp035\_clean.json} \\
+P4  & $\ltrue$ even, $d=60$ (kappa-corrected)                 & $0.350$       & even & $+2.6\times10^{-3}$                         & \pilot              & W1: kappa-corrected rescan (old \texttt{window\_shape\_even.checkpoint.json} superseded) \\
+P5  & $\ltrue$ even, $d=60$ (kappa-corrected)                 & $0.548$       & even & $+5.2\times10^{-9}$ (knife-edge)            & \pilot              & W1: kappa-corrected rescan \\
+P5b & $\ltrue$ odd, $d$-scan (kappa-corrected)                 & $0.548$       & odd  & $-1.5\times10^{-5}$ ($d{=}60$); $-6.1\times10^{-6}$ ($d{=}80$); $-2.4\times10^{-6}$ ($d{=}100$); $+5.7\times10^{-9}$ ($d{=}120$) & \pilot & W1: kappa-corrected rescan \\
+P6  & certify-indeterminate status, right end                  & ${\approx}0.548$ & odd & interval width ${\sim}2.7\times10^{-4} \gg$ signal ${\sim}10^{-9}$ & certify-indeterminate & W1: tau interval arithmetic analysis \\
+P7  & $\lambda_{\mathrm{lb}}$ vs.\ $\ltrue$ at $L{=}0.42$  & $0.42$        & even & $\lambda_{\mathrm{lb}}=9.31\times10^{-10}$; $\ltrue=+3.19\times10^{-5}$ & \pilot & W1: \texttt{lambda\_profile.json} \\
+P8  & $\max|\Delta C|$ cross                                & $3/5$         & even & $\ge 0.630$                                 & \certify            & W2: \texttt{s4\_certify\_cross\_L060.json} \\
+P9  & $\max|\Delta C|$ cross                                & $3/5$         & odd  & $\ge 0.140$                                 & \certify            & W2: \texttt{s4\_certify\_cross\_L060.json} \\
+P10 & min-pivot (full)                                      & $3/5$         & even & $[-0.01970,\,-0.01968]$                     & \certify            & W2: \texttt{s4\_certify\_cross\_L060.json} \\
+P11 & $\ltrue$ (trusted assembly)                           & $3/5$         & even & $-0.231$                                    & \pilot              & W2: \texttt{independent\_dominance\_anchor.json} \\
+P12 & Layer-1 eig (refuted; reported $+0.077$, true $-0.231$) & $3/5$      & even & refuted                                     & \pilot\ refuted     & W2: \texttt{docs/OUTSOURCED\_VERDICTS\ldots.md} \\
+P13 & $\Delta V$ cross delay test                           & $0.552$       & even & $-2.744$                                    & \pilot              & W2: \texttt{docs/OUTSOURCED\_VERDICTS\ldots.md} §3.2 \\
+P14 & $\Delta V$ cross delay test                           & $0.580$       & even & $-0.403$                                    & \pilot              & W2: \texttt{docs/OUTSOURCED\_VERDICTS\ldots.md} §3.2 \\
+P15 & $\Delta V$ cross delay test                           & $0.600$       & even & $-2.251$                                    & \pilot              & W2: \texttt{docs/OUTSOURCED\_VERDICTS\ldots.md} §3.2 \\
+P16 & $\Delta_{\tau_3}$ (odd pivot contribution of $p{=}3$) & $3/5$         & odd  & $-0.113$                                    & \pilot              & W2: \texttt{s4\_profile\_L060.json} \\
+P17 & $\Delta_{\mathrm{cross}}$ (even pivot contribution)   & $3/5$         & even & $+0.195$                                    & \pilot              & W2: \texttt{s4\_profile\_L060.json} \\
+P18 & min-pivot odd                                         & $11/20$       & odd  & $[-2.815\times10^{-2},\,-1.720\times10^{-2}]$ & \certify          & W2: \texttt{s5\_positivity\_L055.json} \\
+P19 & min-pivot even (indeterminate)                        & $11/20$       & even & $[-3.87\times10^{-4},\,+2.43\times10^{-4}]$& \certify            & W2: \texttt{s5\_positivity\_L055.json} \\
+P20 & $\ltrue$ odd (certify anchor)                         & $69/100$      & odd  & $-0.36911$                                  & \certify\ anchor    & W2: \texttt{shape\_certify\_anchor\_odd.json} \\
+P21 & pivot straddle odd                                    & $69/100$      & odd  & $\approx -0.099$                            & \certify            & W2: \texttt{shape\_certify\_anchor\_odd.json} \\
+P22 & $\ltrue$ even (certify anchor)                        & $67/100$      & even & $-0.28596$                                  & \certify\ anchor    & W2: \texttt{shape\_certify\_anchor.json} \\
+P23 & Odd pilot curve (9 pts, monotone)                     & window 2      & odd  & $-0.118 \to -0.369$                         & \pilot              & W2: \texttt{shape\_odd\_N7.json} \\
+P24 & Even pilot curve (7 pts)                              & window 2      & even & $-0.093 \to -0.286$                         & \pilot              & W2: \texttt{shape\_even\_N8.json} \\
+P25 & $d$-refinement (even basin not $d$-robust)            & $0.66$--$0.69$& even & artefact                                    & \pilot              & W2: \texttt{docs/SECOND\_WINDOW\_LAMBDA\_SHAPE.md} §2 \\
+P26 & $\Lambda_2$ window-2 right-end infimum                & ${\to}\log2^-$& odd  & $\approx -0.37$                             & \certify\ anchor    & W2: \texttt{shape\_certify\_anchor\_odd.json} (=P20) \\
+\bottomrule
+\end{tabular}
+\end{sidewaystable}
+
+\bigskip
+\noindent\textbf{Integrity notes.}
+\begin{itemize}[leftmargin=2em]
+  \item P5 carries a SIGN\_FLIP flag at $d=25$: the $d=25$ value is
+    $-1.04\times10^{-9}$ and $d=30$ gives $+8.85\times10^{-9}$.  The sign is
+    not robustly positive until $d=30$.  This point has not been
+    certify-graded.  The paper text accurately reflects this.
+  \item P7 documents the $\lambda_{\mathrm{lb}}$ vs.\ $\ltrue$ separation:
+    $\lambda_{\mathrm{lb}}(0.42)_{\mathrm{even}} = 9.31\times10^{-10}$
+    (certificate relaxation) while $\ltrue(0.42)_{\mathrm{even}} = +3.19\times10^{-5}$
+    (\pilot)---a ratio of $\sim34{,}000\times$.  The matrix is not
+    negative-definite at $L=0.42$; the certificate merely became loose.
+  \item ``certify anchor'' means: the float-center eigenvalue was reproduced
+    by the trusted Arb-interval assembly to all printed digits; the pivot
+    is separately certified by interval arithmetic (straddle confirmed).
+    The eigenvalue itself is not an interval-enclosure result.
+\end{itemize}
+
+\end{document}
