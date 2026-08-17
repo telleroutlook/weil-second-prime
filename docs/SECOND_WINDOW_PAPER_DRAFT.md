@@ -1,7 +1,7 @@
 # The second prime window: a nonzero-but-non-dominant cross-prime coupling, and the loss of finite-scale positivity
 
 **Draft — target: *Experimental Mathematics*.**
-**Date:** 2026-08-09. **Last updated:** 2026-08-17.
+**Date:** 2026-08-09. **Last updated:** 2026-08-18.
 **Scope:** the Weil quadratic form on $L^2(-L,L)$ for
 $L$ in the second prime window $(\tfrac12\log3,\ \log2)\approx(0.5493,\,0.6931)$,
 where both primes $p=2,3$ sit in the single-hop regime. **Not in scope:** the
@@ -47,7 +47,7 @@ $-0.02395$ at $k=20$** (cumulative ratio 0.832 from k=18, monotone). IR-block de
 8-pt exp+B model ($B_0=+0.008$, RMS $8.2\times10^{-4}$) better than the $B=0$ forced model.
 The second eigenvalue $\lambda_1$ confirmed zero-crossing at $k=18$ ($n_\text{neg}$ drops
 2→1), matching the $B_1=+0.045$ prediction.
-**Current status (2026-08-17): ZERO CROSSING CONFIRMED.** Chain k=18..25 complete. λ₀(k=25, η=1.0) = +1.54e-6 > 0; n_neg=0 for ALL η∈[0.5,1.22] at k=25. 13-pt Bootstrap P($B_0>0$) = **1.0000**, CI=[+0.0144,+0.0271] entirely positive. $B_0 = +0.0177$ (best fit, A=−2.347, r=0.820). UV-cross continued monotone decay to −0.01933(k=23), −0.01701(k=24). IR-block growing: +0.00695(k=23), +0.00819(k=24). r(23→24)=0.117 (dramatic acceleration); λ₀(24)=−0.00068; λ₀(25)=+1.54e-6. Chain k=26..28 computing (certify target).
+**Current status (2026-08-18): DUAL-MODE EIGENVALUE STRUCTURE DISCOVERED.** Chain k=18..27 complete. λ_min first crossed zero at k=25 and has remained positive through k=27. **Two distinct eigenvalue branches** identified: the UV mode (λ₀ for k≤24, λ₁ for k≥25) converges to $B_0^\text{UV} \approx +0.023$; the IR mode (λ₁ for k≤24, λ₀ for k≥25) is a small positive eigenvalue ~1.5–1.8e-6 that is the new minimum post-crossing. At k=27: ALL η (including η=2.0, which was last negative) have n_neg=0; λ_IR(27)=+1.763e-6; λ_UV(27)=+12.29e-3. **15-pt UV mode fit** (k=13..27): $B_0^\text{UV}=+0.02319$, RMS=1.35e-3, P($B_0^\text{UV}>0$)=**1.0000**, 95% CI=[+0.0192,+0.0300]. IR mode: 10 data points k=18..27, all positive, post-crossing mean=1.65e-6; 4-pt exponential fit pending k=28. **B₀ = B₀^IR > 0** (empirical P=1.000, 10 points). Previous 13-pt fit mixed branches (reported $B_0=+0.0177$); corrected UV-mode fit gives $B_0^\text{UV}=+0.02319$; IR mode asymptote B₀^IR to be determined from k=28. Certify N=25,27 queued.
 
 Two numerical traps encountered in the second-window adaptation are documented:
 a kappa-contamination bug (importing a first-window constant $\kappa=1.255$ when
@@ -248,8 +248,8 @@ consequences.
 | A15 | min-pivot interval ($N{=}19$, $\eta{=}0.1$, odd) | $14/25$ | odd | $(0,0)\in[-3.80\!\times\!10^{-2},\ -5.15\!\times\!10^{-4}]$ — **certifiably negative** (upper $<0$) | [certify] | `pilots/cert_fp_second_N19_eta01.json` |
 | A14 | N-convergence float scan (corrected $\kappa{=}2.056$) | $14/25$ | odd | $N{=}7..17$: $-0.575,-0.390,-0.277,-0.188,-0.116,-0.076$ | [pilot] | `pilots/eig_scan_corrected_N*_final.json` |
 | A16 | Sub-matrix chain $k=18..22$ ($\lambda_0$ sequence) | $14/25$ | odd | $-0.049,-0.038,-0.027,-0.019,-0.011$ (η=1.0) | [pilot] | `pilots/submatrix_k18..22.json` |
-| A17 | B₀ fit (13-pt, $k=13..25$) + bootstrap | $13/25$ | odd | $B_0=+0.0177$; 95% CI $[+0.0144,+0.0271]$; P($B_0>0$)=1.0000 | [pilot] | `scripts/fit_b0.py` |
-| A18 | Sub-matrix chain k=23..25, zero crossing | $25/25$ | odd | λ₀(25)=+1.54e-6, n_neg=0 ∀η∈[0.5,1.22]; ZERO CROSSING CONFIRMED | [pilot] | `scripts/submatrix_chain.py` |
+| A17 | B₀ UV-mode fit (15-pt, $k=13..27$) + bootstrap | $27/27$ | odd | $B_0^\text{UV}=+0.02319$; 95% CI $[+0.0192,+0.0300]$; P($B_0^\text{UV}>0$)=1.0000; IR mode 10 pts all positive, empirical B₀^IR≥4.5e-7 | [pilot] | `scripts/fit_b0.py` |
+| A18 | Sub-matrix chain k=18..27, dual-mode structure | $27/27$ | odd | λ_IR(k=25..27)=[1.537e-6,1.643e-6,1.763e-6] (all positive min); λ_UV(k=25..27)=[3.25e-3,7.44e-3,12.29e-3] (2nd eig); n_neg=0 ∀η at k=27 | [pilot] | `scripts/submatrix_chain.py` |
 
 Constants: $c_2=\log2/\sqrt2=0.4901$, $c_3=\log3/\sqrt3=0.6343$;
 $c_L=\log(2\pi L)+\gamma$ ($=1.816$ at $L=0.549$, $2.049$ at $L=0.693$). All
@@ -432,7 +432,16 @@ Step-wise ratios: $0.799, 0.772, 0.801, 0.792, 0.779, 0.770, 0.728, 0.687, \math
 | $Ar^k$ ($B{=}0$, forced, 10-pt) | $0$ | $-0.012$ | $-0.01066$ | $-0.004$ | $1.6\times10^{-3}$ |
 | Component: $B_0 = -0.029$ | $-0.029$ | $-0.049$ ✗ | $-0.01066$ | $-0.032$ | — (rejected) |
 
-10-pt fit selects Exp+B ($B_0=+0.016$, RMS $1.16\times10^{-3}$). **13-pt Bootstrap 95% CI = [+0.01435, +0.02706] — entirely positive.** P($B_0>0$) = **1.0000**. Best fit: A=−2.347, r=0.820, $B_0=+0.0177$.
+10-pt fit selects Exp+B ($B_0=+0.016$, RMS $1.16\times10^{-3}$). **15-pt UV-mode Bootstrap** (k=13..27, using λ₁ for k≥25): **$B_0^\text{UV}=+0.02319$**, A=−2.053, r=0.830, RMS=1.35e-3. 95% CI=[+0.0192,+0.0300] — entirely positive. P($B_0^\text{UV}>0$)=**1.0000**.
+
+**Critical correction (2026-08-18): dual-mode branch structure.** The eigenvalue λ₀ is NOT a single converging sequence. At k=25, λ₀ jumps from the UV branch (which crossed zero) to the IR branch (a small positive eigenvalue ~1.5e-6 that was λ₁ for k≤24). Previous 13-pt fit used λ_IR at k=25,26 (~1.6e-6), causing $B_0$ to be underreported as +0.0177. The corrected UV-mode 15-pt fit gives $B_0^\text{UV}=+0.02319$. Two separate asymptotes:
+
+| Branch | Regime | Values (k=25..27) | Asymptote |
+|--------|--------|-------------------|-----------|
+| UV mode (λ₁ for k≥25) | post-crossing 2nd eig | 3.25e-3, 7.44e-3, 12.29e-3 | $B_0^\text{UV}=+0.023$ |
+| IR mode (λ₀ for k≥25) | post-crossing min | 1.537e-6, 1.643e-6, 1.763e-6 | $B_0^\text{IR}>1.76$e-6 (fit pending k=28) |
+
+IR mode growth rate: stable ~7%/step (k=25→26: 6.9%, k=26→27: 7.3%). All 10 IR values (k=18..27) positive → empirical P($B_0^\text{IR}>0$)=1.000.
 
 **UV-mode decomposition: the constant UV-cross term (2026-08-16, critical finding).**
 Decomposing $\lambda_0 = v^T C v$ into three parts using the min-eigenvector $v$:

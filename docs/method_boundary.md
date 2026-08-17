@@ -1,8 +1,8 @@
 # Method Boundary Analysis — Second-Window Split-Residual Schur Method
 
-**Date:** 2026-08-17  
+**Date:** 2026-08-18  
 **Grade:** analysis (float pilot data + certified anchors)  
-**Status:** Working document; **DUAL-MODE STRUCTURE DISCOVERED (2026-08-17)**. Two eigenvalue branches (UV mode + IR mode) switch at k=25. UV mode: B₀^UV=+0.02130, P=1.0000, CI=[+0.0179,+0.0275] (14-pt, k=13..26, using λ₁ for k≥25). IR mode: new minimum from k=25, always positive (k=18..26), post-crossing mean ≈1.59e-6. B₀ = B₀^IR (Weil form infimum); fit pending k=27,28.
+**Status:** Working document; **DUAL-MODE STRUCTURE DISCOVERED (2026-08-17)**. Two eigenvalue branches (UV mode + IR mode) switch at k=25. UV mode: B₀^UV=+0.02319, P=1.0000, CI=[+0.0192,+0.0300] (15-pt, k=13..27, using λ₁ for k≥25). IR mode: new minimum from k=25, always positive (k=18..27), post-crossing mean ≈1.65e-6. B₀ = B₀^IR (Weil form infimum); IR fit pending k=28. k=27 complete (ALL η n_neg=0, including η=2.0 first time). Certify N=25,27 queued (post-k28).
 
 ---
 
@@ -71,9 +71,11 @@ harmonic threshold by 1.271 units, pushing the effective $N_{\min}$ from 5 to 13
 | **24** | **49** | **+0.588** | **−0.00121** | **−0.00068** | — | — |
 | **25** | **51** | **+0.628** | **+1.47e-6** | **+1.54e-6 *** | — | — |
 | **26** | **53** | **+0.666** | **+1.58e-6** | **+1.64e-6** | — | — |
+| **27** | **55** | **+0.702** | **+1.70e-6** | **+1.76e-6** | — | — |
 
 *k=25 (2026-08-17): **ZERO CROSSING** — n_neg=0 at ALL η∈{0.5,0.65,0.8,0.9,1.0,1.1,1.22}. Only η=2.0 still n_neg=1.*
 *k=26 (2026-08-17): All η∈[0.5,1.22] n_neg=0. λ_min is IR mode ~1.6e-6; UV mode (λ₁) = +7.43e-3.*
+*k=27 (2026-08-18): **ALL η n_neg=0** (including η=2.0 for first time). λ_IR=+1.763e-6; λ_UV=+12.29e-3.*
 
 **N=15 full-float validation** (2026-08-16, bwgqjkw5z, 10838s):
 Full 15×15 matrix from scratch (not sub-matrix): λ_min(η=1.0)=**−0.098986**, Frobenius η*=1.1715 gives
@@ -120,13 +122,13 @@ Key observations:
 
 Observed: r_raw = 0.728→0.687→0.566→0.544→0.117→−0.002 (monotone decrease to sign change). This is the predicted behavior for B₀>0 approaching zero crossing. B₀=0 would require r_raw≈constant≈0.79, inconsistent with the monotone decrease. **The acceleration is a model-independent diagnostic for B₀>0. Zero crossing confirmed at k=25.**
 
-**Model comparison** (14-pt fit k=13..26, **UV mode only**: λ₀ for k≤24, λ₁ for k≥25; η=1.0):
+**Model comparison** (15-pt fit k=13..27, **UV mode only**: λ₀ for k≤24, λ₁ for k≥25; η=1.0):
 
-| Model | Parameters | B₀^UV (asymptote) | λ_UV(25) pred | **actual** | λ_UV(26) pred | **actual** | RMS |
+| Model | Parameters | B₀^UV (asymptote) | λ_UV(25) pred | **actual** | λ_UV(27) pred | **actual** | RMS |
 |-------|-----------|----------------|-------------|------------|-------------|------------|-----|
-| **Exp+B: $Ar^k+B$** | A=−2.153, r=0.826 | **+0.02130** | +0.00219 | **+3.25e-3** | +0.00461 | **+7.44e-3** | **1.16e-3** |
+| **Exp+B: $Ar^k+B$** | A=−2.053, r=0.830 | **+0.02319** | +0.00228 | **+3.25e-3** | +0.00968 | **+12.29e-3** | **1.35e-3** |
 
-**Note (2026-08-17)**: Previous 13/14-pt fits used λ_min at k=25,26 (which is the IR mode ≈1.6e-6, NOT the UV mode). The corrected UV mode fit (using λ₁ for k≥25) gives B₀^UV=+0.02130.
+**Note (2026-08-17)**: Previous 13/14-pt fits used λ_min at k=25,26 (which is the IR mode ≈1.6e-6, NOT the UV mode). The corrected UV mode fit (using λ₁ for k≥25) gives B₀^UV=+0.02319 (15-pt, k=13..27).
 
 **λ₁ convergence model** (k=13..18): 5-pt NLS gives A=−1.84, r=0.805, **B₁=+0.045**.
 λ₁ asymptotes to +0.045 (clearly positive); zero crossing at k≈17.1 — **confirmed at k=18 (λ₁>0 observed)**.
@@ -145,9 +147,10 @@ Observed: r_raw = 0.728→0.687→0.566→0.544→0.117→−0.002 (monotone dec
 B₀ to +0.031. The k≥13 window (b_L>0, physically consistent) gives B₀≈−0.001.
 The b_L<0 regime should NOT be mixed with the b_L>0 convergence model.
 
-**Bootstrap 95% CI for B₀^UV** (UV mode, k=13..26, 10000 replicates, corrected):
-**B₀^UV ∈ [+0.01790, +0.02751] (95%) — ENTIRELY POSITIVE.** P(B₀^UV>0) = **1.0000**.
-14-pt best fit: A=−2.153, r=0.826, **B₀^UV=+0.02130**, RMS=1.16e-3.
+**Bootstrap 95% CI for B₀^UV** (UV mode, k=13..27, 10000 replicates, corrected):
+**B₀^UV ∈ [+0.01916, +0.03009] (95%) — ENTIRELY POSITIVE.** P(B₀^UV>0) = **1.0000**.
+15-pt best fit: A=−2.053, r=0.830, **B₀^UV=+0.02319**, RMS=1.35e-3.
+Earlier (k=13..26, 14-pt, **UV mode only**): P(B₀^UV>0) = 1.0000, CI=[+0.01790,+0.02751].
 Earlier (k=13..25, 13-pt, **UV mode only**): P(B₀^UV>0) = 1.0000, CI=[+0.0179,+0.0276].
 Earlier (k=13..22, 10-pt): P(B₀>0) = 0.9957, CI=[+0.006,+0.034].
 Trend: 0.44 → 0.780 → 0.932 → 0.9957 → **1.0000**.
@@ -736,18 +739,19 @@ lower than previously thought.
 5. **T1 pilot extrapolations (L=0.62, 0.65) were invalid**: computed with $b_L < 0$;
    the "positive $\lambda_\infty$" predictions have no bearing on true convergence.
 
-6. **Current certify results and B₀ status** (updated 2026-08-17):
+6. **Current certify results and B₀ status** (updated 2026-08-18):
    - N=19 η=0.1: pivot(0,0)∈[−0.038,−5.15e-4] — CNPD certified.
    - **Dual-mode structure discovered**: λ_min(C_k) tracks two eigenvalue branches.
      - **UV mode** (λ₀ for k≤24, λ₁ for k≥25): confirmed zero crossing between k=24
-       and k=25. Corrected 14-pt UV-mode fit: **B₀^UV=+0.02130, P=1.0000, CI=[+0.0179,+0.0275]**.
-       At k=26: λ_UV=+7.44e-3, growing toward B₀^UV=+0.021.
-     - **IR mode** (λ₁ for k≤24, λ₀ for k≥25): always positive (k=18..26), all
-       9 values in range [4.5e-7, 1.76e-6]. Post-crossing mean ≈1.59e-6. This is
-       the **true Weil form infimum** B₀=B₀^IR. Exponential fit pending k=27,28 (need ≥4
-       post-crossing points).
+       and k=25. Corrected 15-pt UV-mode fit (k=13..27): **B₀^UV=+0.02319, P=1.0000,
+       CI=[+0.0192,+0.0300]**. k=27: λ_UV=+12.29e-3.
+     - **IR mode** (λ₁ for k≤24, λ₀ for k≥25): always positive (k=18..27), all
+       10 values in range [4.5e-7, 1.76e-6]. Post-crossing (k=25..27): [1.537e-6, 1.643e-6, 1.763e-6],
+       growth rate ~7%/step. This is the **true Weil form infimum** B₀=B₀^IR.
+       Exponential fit pending k=28 (need ≥4 post-crossing points).
+     - **k=27 (2026-08-18)**: ALL η (including η=2.0 for first time) have n_neg=0.
    - **Note**: Previous 13/14-pt fit (B₀=+0.0177/+0.0153) mixed IR mode values at k=25,26;
-     corrected UV-mode fit gives B₀^UV=+0.0213 (higher). B₀=B₀^IR is the actual infimum.
+     corrected UV-mode 15-pt fit gives B₀^UV=+0.02319. B₀=B₀^IR is the actual infimum.
 
 7. **Honest research narrative**: The second-window investigation documents the
    honest boundary of the split-residual Schur method when extended to two primes,
@@ -764,16 +768,17 @@ lower than previously thought.
 | **DONE** | k=20..22: λ₀→0, UV structural transitions | `submatrix_k20..22.json` ✓ |
 | **DONE** | k=23: λ₀=−0.00579, r=0.544 | `submatrix_k23.json` ✓ |
 | **DONE** | k=24: λ₀=−0.00068, r=0.117 | `submatrix_k24.json` ✓ |
-| **DONE** | **k=25: zero crossing confirmed** (n_neg=0, λ_IR=+1.54e-6, λ_UV jumps to +3.25e-3) | `submatrix_k25.json` ✓ |
-| **DONE** | **k=26: dual-mode structure confirmed** (λ_IR=+1.64e-6, λ_UV=+7.44e-3) | `submatrix_k26.json` ✓ |
-| **DONE** | **UV-mode 14-pt fit: B₀^UV=+0.02130, P=1.0000, CI=[+0.0179,+0.0275]** | Bootstrap ✓ |
-| **DONE** | **IR mode confirmed positive all k=18..26; B₀^IR fit pending k=27,28** | empirical ✓ |
-| **Active** | k=27 chain computing (b=7/26 done, ~2h remaining) | `submatrix_k27.json` pending |
-| **Active** | k=28 chain (follows k=27 automatically, ~4h after) | `submatrix_k28.json` pending |
-| **Active** | watch_chain_ext.sh auto-processes k=27/28 + fit_b0.py | PID 80712 ✓ |
-| **High** | After k=27,28: fit IR mode exponentially (need ≥4 post-crossing pts) | `fit_b0.py` ✓ |
-| **High** | UV mode at k=28: λ_UV≈+0.011 (certifiable!); try certify N=28 for UV mode | After k=28 |
-| **Medium** | Assess certify for IR mode at k=25..28 (λ_IR≈1.6e-6; needs high prec or reordering) | After k=28 |
+| **DONE** | **k=25: zero crossing confirmed** (n_neg=0, λ_IR=+1.54e-6, λ_UV=+3.25e-3) | `submatrix_k25.json` ✓ |
+| **DONE** | **k=26: dual-mode confirmed** (λ_IR=+1.64e-6, λ_UV=+7.44e-3) | `submatrix_k26.json` ✓ |
+| **DONE** | **k=27: ALL η n_neg=0** incl η=2.0; λ_IR=+1.763e-6, λ_UV=+12.29e-3 | `submatrix_k27.json` ✓ |
+| **DONE** | **UV-mode 15-pt fit: B₀^UV=+0.02319, P=1.0000, CI=[+0.0192,+0.0300]** | Bootstrap ✓ |
+| **Active** | k=28 chain computing (b=18/27, ~3h remaining as of 2026-08-18) | PID 80632 |
+| **Active** | watch_chain_ext.sh auto-processes k=28 + fit_b0.py (4th IR pt) | PID 80719 |
+| **Queued** | post_k28_certify.sh: after k=28, run certify N=25 η=1 prec=512 then N=27 | PID 4633 |
+| **High** | After k=28: run 4-pt IR mode exponential fit → determine B₀^IR numerically | `fit_b0.py` |
+| **High** | Certify N=25, η=1/1, prec=512, --no-bernstein (λ_min≈1.54e-6) | auto-queued |
+| **High** | Certify N=27, η=1/1, prec=512, --no-bernstein (λ_min≈1.76e-6) | auto-queued |
+| **Medium** | After IR mode fit: update paper draft with B₀^IR estimate | After k=28 |
 
 ---
 
