@@ -325,7 +325,8 @@ def _mk_integrand_arb(x, y, n_row: int, n_col: int,
 
 def integrate_M_K(n_row: int, n_col: int, a_num: int, a_den: int,
                   depth: int = 4, prec: int = 256,
-                  use_bernstein: bool = True) -> PathAResult:
+                  use_bernstein: bool = True,
+                  skip_remainder: bool = False) -> PathAResult:
     """
     Certified enclosure of M_K[row,col] = <K_a P_{n_col}, P_{n_row}>.
 
@@ -346,7 +347,14 @@ def integrate_M_K(n_row: int, n_col: int, a_num: int, a_den: int,
     use_bernstein : bool
         If True (default), use the Bernstein ellipse analytic remainder
         for formally derivable certificates (O2 certification path).
-        If False, use Richardson GL-8/GL-4 remainder (backward compat).
+        If False, use Richardson GL-8/GL-4 remainder (for large n_row where
+        Bernstein bound >> 1, e.g. N >= 20 second window).
+    skip_remainder : bool
+        If True, skip all truncation-error remainder computation (Bernstein
+        and Richardson). Returns the raw GL-8 Arb ball only. Use ONLY for
+        float-center pilot paths (e.g. recompute_schur float mode) where
+        the interval width is discarded anyway. P0 defect if used in a
+        certified proof path.
     """
     from flint import arb, ctx
     ctx.prec = prec
@@ -361,33 +369,32 @@ def integrate_M_K(n_row: int, n_col: int, a_num: int, a_den: int,
     # We integrate both for correctness.
 
     total_arb = arb(0)
+    total_arb_4 = arb(0)  # Richardson: GL-4 counterpart (used when use_bernstein=False)
     leaves = []
 
-    n_sub = 2 ** depth
+    # Adaptive subdivision counts to resolve high-degree Legendre oscillations.
+    # n_col_deg = max(n_row, n_col) is used symmetrically for both axes so that
+    # both P_{n_row}(x) and P_{n_col}(y) are resolved by their respective GL loops.
+    n_col_deg = max(n_row, n_col)
+    n_ysub = max(1, n_col_deg // 2 + 2)  # y strips: resolves P_{n_col}(y)
+    n_xsub = max(1, n_col_deg // 2 + 2)  # x strips: resolves P_{n_row}(x) (symmetric)
+    n_sub = max(2 ** depth, n_xsub)       # depth adds extra refinement on top
     x_step = Fraction(2, n_sub)  # step on [-1,1]
 
-    # y-subdivision: enough strips to resolve P_{n_col} oscillations.
-    # n_col//2 + 2 gives ~6 strips for n_col=10, converging to 10-digit accuracy.
-    n_col_deg = max(n_row, n_col)
-    n_ysub = max(1, n_col_deg // 2 + 2)
+    # Compute GL nodes once — they don't change between x-strips
+    import mpmath
+    mpmath.mp.dps = 80
+    nodes_mp, weights_mp = mpmath.gauss_quadrature(8, "legendre")
+    x_nodes = [arb(mpmath.nstr(nd, 70, strip_zeros=False)) for nd in nodes_mp]
+    x_wts   = [arb(mpmath.nstr(wt, 70, strip_zeros=False)) for wt in weights_mp]
+    if not use_bernstein and not skip_remainder:
+        nodes4_mp, weights4_mp = mpmath.gauss_quadrature(4, "legendre")
+        x_nodes4 = [arb(mpmath.nstr(nd, 70, strip_zeros=False)) for nd in nodes4_mp]
+        x_wts4   = [arb(mpmath.nstr(wt, 70, strip_zeros=False)) for wt in weights4_mp]
 
     for kx in range(n_sub):
         x_lo = Fraction(-1) + Fraction(kx) * x_step
         x_hi = x_lo + x_step
-
-        # Triangle 1 (x > y): for each x-strip, y in [max(-1, x_lo_strip), x]
-        # We use a 2D Gauss rule: outer loop over x, inner over y in [-1, x_mid]
-        # approximated by y in [x_lo, x_hi] intersected with [-1, x_mid]
-
-        # Inner y integral: triangle x > y, outer x strip [x_lo, x_hi]
-        # For each x point, y ranges from -1 to x.
-        # Use iterated 1D quadrature: outer Gauss over x, inner over y in [-1,x].
-
-        import mpmath
-        mpmath.mp.dps = 80
-        nodes_mp, weights_mp = mpmath.gauss_quadrature(8, "legendre")
-        x_nodes = [arb(mpmath.nstr(nd, 70, strip_zeros=False)) for nd in nodes_mp]
-        x_wts   = [arb(mpmath.nstr(wt, 70, strip_zeros=False)) for wt in weights_mp]
 
         x_lo_arb  = _frac_to_arb(x_lo)
         x_hi_arb  = _frac_to_arb(x_hi)
@@ -436,6 +443,37 @@ def integrate_M_K(n_row: int, n_col: int, a_num: int, a_den: int,
                 strip_sum += x_wt * inner_sum
 
             total_arb += x_hf_arb * strip_sum
+            if not use_bernstein and not skip_remainder:
+                strip_sum_4 = arb(0)
+                for x_nd4, x_wt4 in zip(x_nodes4, x_wts4):
+                    x_pt4 = x_mid_arb + x_hf_arb * x_nd4
+                    if tri == 1:
+                        y_lo_f4, y_hi_f4 = arb(-1), x_pt4
+                    else:
+                        y_lo_f4, y_hi_f4 = x_pt4, arb(1)
+                    y_range4 = y_hi_f4 - y_lo_f4
+                    y_sub_step4 = y_range4 / arb(n_ysub)
+                    inner_sum_4 = arb(0)
+                    for ky4 in range(n_ysub):
+                        y_lo_a4 = y_lo_f4 + arb(ky4) * y_sub_step4
+                        y_hi_a4 = y_lo_a4 + y_sub_step4
+                        y_mid_a4 = (y_lo_a4 + y_hi_a4) / arb(2)
+                        y_hf_a4  = (y_hi_a4 - y_lo_a4) / arb(2)
+                        for y_nd4, y_wt4 in zip(x_nodes4, x_wts4):
+                            y_pt4 = y_mid_a4 + y_hf_a4 * y_nd4
+                            t4 = a_arb * (x_pt4 - y_pt4)
+                            s4 = abs(t4)
+                            if s4.is_zero():
+                                rpp_v4 = arb(-7) / arb(4)
+                            else:
+                                rpp_v4 = _rpp_arb(s4, prec)
+                            inner_sum_4 += y_wt4 * y_hf_a4 * (
+                                (-a_arb * rpp_v4)
+                                * _legendre_at_arb(n_col, y_pt4)
+                                * _legendre_at_arb(n_row, x_pt4)
+                            )
+                    strip_sum_4 += x_wt4 * inner_sum_4
+                total_arb_4 += x_hf_arb * strip_sum_4
 
             # Record leaf witness
             enc = _arb_to_interval(x_hf_arb * strip_sum)  # approximate per-strip contribution
@@ -454,21 +492,27 @@ def integrate_M_K(n_row: int, n_col: int, a_num: int, a_den: int,
             )
             leaves.append(w)
 
-    # Add Bernstein ellipse outer remainder if requested
-    if use_bernstein:
-        from src.archimedean.bernstein import bernstein_mk_bound
-        a = Fraction(a_num, a_den)
-        # Each x-strip has half-width x_hf_frac = x_step/2
-        x_step = Fraction(2, n_sub)
-        strip_half = x_step / 2
-        # Total bound = per-strip * n_sub * 2 triangles
-        per_strip_bound = bernstein_mk_bound(
-            a_num, a_den, n_row, n_col, strip_half, n_gl=8
-        )
-        total_bound_frac = per_strip_bound * n_sub * 2
-        from flint import arb
-        tb_arb = arb(str(total_bound_frac.numerator)) / arb(str(total_bound_frac.denominator))
-        total_arb = total_arb + arb.union(-tb_arb, tb_arb)
+    # Add remainder: Bernstein ellipse (certified) or Richardson GL-8/GL-4 (empirical).
+    # skip_remainder=True: raw Arb ball only (float-center pilot paths, not for proofs).
+    if not skip_remainder:
+        if use_bernstein:
+            from src.archimedean.bernstein import bernstein_mk_bound
+            a = Fraction(a_num, a_den)
+            x_step = Fraction(2, n_sub)
+            strip_half = x_step / 2
+            per_strip_bound = bernstein_mk_bound(
+                a_num, a_den, n_row, n_col, strip_half, n_gl=8
+            )
+            total_bound_frac = per_strip_bound * n_sub * 2
+            from flint import arb
+            tb_arb = arb(str(total_bound_frac.numerator)) / arb(str(total_bound_frac.denominator))
+            total_arb = total_arb + arb.union(-tb_arb, tb_arb)
+        else:
+            # Richardson GL-8/GL-4 empirical remainder: 2*|GL8 - GL4|
+            # Provides truncation-error coverage when Bernstein bound >> 1 (large n_row).
+            from flint import arb as _arb_cls
+            richardson_rem = _arb_cls(2) * abs(total_arb - total_arb_4)
+            total_arb = total_arb + _arb_cls.union(-richardson_rem, richardson_rem)
 
     total_enc = _arb_to_interval(total_arb)
     return PathAResult(
@@ -578,8 +622,12 @@ def integrate_S_KK(n_row: int, n_col: int, a_num: int, a_den: int,
     last_mk_col = None
 
     for k in range(parity, k_max + 1, 2):
-        mk_row = integrate_M_K(k, n_row, a_num, a_den, depth=depth, prec=prec)
-        mk_col = integrate_M_K(k, n_col, a_num, a_den, depth=depth, prec=prec)
+        # use_bernstein=False: for large k, Bernstein bound (2R)^k >> 1 (unusable).
+        # Richardson GL-8/GL-4 gives tight empirical bounds for all k.
+        mk_row = integrate_M_K(k, n_row, a_num, a_den, depth=depth, prec=prec,
+                               use_bernstein=False)
+        mk_col = integrate_M_K(k, n_col, a_num, a_den, depth=depth, prec=prec,
+                               use_bernstein=False)
 
         scale = Frac(2 * k + 1, 2)
         contrib = imul(mk_row.to_interval(), mk_col.to_interval())
@@ -796,7 +844,9 @@ def integrate_S_VK(n_row: int, n_col: int, a_num: int, a_den: int,
     partial_v_sq  = Frac(0)   # sum_{k<=k_max} <VP_{n_col},P_k>^2 * (2k+1)/2  (partial V-norm)
 
     for k in range(parity, k_max_search + 1, 2):
-        mk_r = integrate_M_K(k, n_row, a_num, a_den, depth=depth, prec=prec)
+        # use_bernstein=False: for large k, Bernstein (2R)^k >> 1; use Richardson.
+        mk_r = integrate_M_K(k, n_row, a_num, a_den, depth=depth, prec=prec,
+                             use_bernstein=False)
         mk_iv = mk_r.to_interval()
 
         scale = Frac(2 * k + 1, 2)

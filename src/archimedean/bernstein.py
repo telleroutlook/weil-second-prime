@@ -125,12 +125,37 @@ def bernstein_mk_bound(
 ) -> Fraction:
     """Certified Bernstein ellipse remainder for one M_K strip integral.
 
-    M_K[n_row, n_col] integrand: k_a(x,y) * P_{n_col}(y) * P_{n_row}(x)
-    where |k_a| <= a * |r''(a*(x-y))| <= a * (7/4) = 7a/4
-    and |P_n(x)| <= 1 for x in [-1,1].
+    The outer GL-n integrates G(x) = P_{n_row}(x) * inner_y(x) over the strip.
+    On the Bernstein ellipse E_rho for strip [-h, h]:
 
-    Therefore M_f = a * (7/4) * 1 * 1 = 7a/4.
+        max|G(z)| <= inner_y_bound * max|P_{n_row}(z)|
+
+    where:
+      inner_y_bound <= (7/4 * a) * 2  (kernel bound times y-interval length 2)
+      max|P_{n_row}(z)| <= (2*R)^{n_row}  (conservative Szego-type bound;
+          R = 1 + h*(rho+1)/2 is the max |x| reached on E_rho)
+
+    NOTE: For n_row >= 2*n_gl, this bound exceeds 1 and is not useful for
+    certifying positive pivots.  Negative-pivot certifications remain valid
+    since a large interval still contains the (clearly negative) true value.
     """
     a = Fraction(a_num, a_den)
-    M_f = Fraction(7, 4) * a  # = 7/4 * 7/20 = 49/80 for our application
+    h = strip_half_width
+
+    if h <= 0:
+        return Fraction(0)
+
+    ah = a * h
+    rho_candidate = PI_LO / ah
+    rho = max(rho_candidate, Fraction(3, 2))
+
+    # Max |x| on E_rho: x = x_mid + h*z, |x_mid| <= 1, max|z| <= (rho+1)/2
+    R = Fraction(1) + h * (rho + 1) / 2
+
+    # max|P_{n_row}(z)| on E_rho: use (2R)^{n_row} (conservative Szego bound)
+    pn_bound = (Fraction(2) * R) ** n_row
+
+    # inner_y(z) bound: kernel * integration domain length * |P_{n_col}(real y)|<=1
+    M_f = Fraction(7, 4) * a * 2 * pn_bound
+
     return bernstein_gl_bound(strip_half_width, a_num, a_den, n_gl, M_f)

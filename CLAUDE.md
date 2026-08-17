@@ -90,6 +90,20 @@ even+odd cross-term certify is ~30–40 min). Use
 2. Near-zero Taylor cubic coefficient for the RPP kernel is $7s^3/11520$, not
    $s^3/2880$. A remainder without an analytic domain + Bernstein-ellipse bound +
    theorem constant is not a certified remainder.
+3. `integrate_S_KK` and `integrate_S_VK` must call `integrate_M_K` with
+   `use_bernstein=False` for all internal k-loop entries. For the second window
+   ($a \approx 0.56$), $k \ge 43$ makes the Bernstein bound $(2R)^k \gg 1$,
+   bloating S0 intervals to $\pm 10^{17}+$. Reverting to `use_bernstein=True`
+   is a silent P0 defect. See regression tests
+   `TestSkkSvkBernsteinBlowupRegression` in `tests/archimedean/test_integrators.py`.
+
+**Epistemic note on Richardson mode** (`use_bernstein=False`):
+The GL-8/GL-4 Richardson bound $2|I_8 - I_4|$ is an *empirical* truncation-error
+coverage, not a formal Bernstein-ellipse analytic certificate. It is adequate for
+$N \le 21$ at current depth settings (see `docs/richardson_remainder_analysis.md`).
+Results certified with Richardson mode are labelled `[certify]` as outward-rounded
+Arb arithmetic; the epistemic gap vs. formal Bernstein certificates must be noted
+in any publication.
 
 ## Schema conventions (inherited)
 

@@ -1,53 +1,33 @@
 === Zenodo Upload Metadata: Range-Termination Paper ===
 
-Title:
-The Range of a Finite-Scale Weil Positivity Method: Success in the First Prime
-Window and Termination in the Second
+(Each field below is a single copy-paste block. Fields are separated by blank
+lines; there are no hard line breaks inside a field, so pasting into a Zenodo
+input box will not carry stray newlines.)
 
-Authors: Lin Tao
+--- Title ---
+The Range of a Finite-Scale Weil Positivity Method: Success in the First Prime Window and Termination in the Second
 
-Upload type: Publication / Preprint
+--- Authors ---
+Lin Tao
 
-Description (Abstract):
-We determine the exact range of validity of a split-residual Schur criterion for
-finite-scale positivity of the local Weil quadratic form Q_W^L. The method
-succeeds in the first prime window L in (1/2 log2, 1/2 log3), where it certifies
-lambda(7/20) > 0 (the FP-0.35 result). We show, by certified interval arithmetic
-and d-refined pilot computation, that the minimum eigenvalue lambda_min(L)
-decreases monotonically within each prime window, with infimum at the right
-endpoint L -> (1/2 log p)^-. At the first window's right endpoint the positive
-margin is already exhausted to a pilot-level knife-edge (odd sector negative for
-truncation dimension d<=100, marginally positive at d=120; certify-level
-indeterminate, as the shift-parameter enclosure width ~2.7e-4 exceeds the ~1e-9
-signal by four orders of magnitude). In the second window L in (1/2 log3, log2),
-the double-prime cross-coupling J(tau2,tau3) -- a structure absent from the first
-window -- is shown to be nonzero at certify grade, but two natural conjectures
-about it (that it dominates positivity; that it delays margin collapse) are
-independently refuted; the second window loses positive definiteness at
-certified anchor points (odd right endpoint lambda = -0.369). The per-window
-right-endpoint sequence lambda((1/2 log p)^-) crosses from marginally positive to
-strictly negative, and an analytic extrapolation (not constructed) indicates
-continued descent. We conclude that the method's positive margin exhausts
-gradually beginning at the first window's right endpoint, terminating in the
-second -- a precise range-boundary result. This does NOT imply the Riemann
-Hypothesis, is not extrapolated past L = log2, and characterizes only this
-finite-scale construction.
+--- Upload type ---
+Publication / Preprint
 
-Keywords:
-Weil quadratic form; explicit formula; finite-scale positivity; Schur complement;
-certified interval arithmetic; computer-assisted proof; range boundary
+--- Description (Abstract) ---
+We determine the exact range of validity of a split-residual Schur criterion for finite-scale positivity of the local Weil quadratic form Q_W^L. The method succeeds in the first prime window L in (1/2 log2, 1/2 log3), where it certifies lambda(7/20) > 0 (the FP-0.35 result). We show, by certified interval arithmetic and d-refined pilot computation, that the minimum eigenvalue lambda_min(L) decreases monotonically within each prime window, with infimum at the right endpoint L -> (1/2 log p)^-. At the first window's right endpoint the positive margin is already exhausted to a pilot-level knife-edge (odd sector negative for truncation dimension d<=100, marginally positive at d=120; certify-level indeterminate, as the shift-parameter enclosure width ~2.7e-4 exceeds the ~1e-9 signal by four orders of magnitude). In the second window L in (1/2 log3, log2), the double-prime cross-coupling J(tau2,tau3) -- a structure absent from the first window -- is shown to be nonzero at certify grade, but two natural conjectures about it (that it dominates positivity; that it delays margin collapse) are independently refuted; the second window loses positive definiteness at certified anchor points (odd right endpoint lambda = -0.369). The per-window right-endpoint sequence lambda((1/2 log p)^-) crosses from marginally positive to strictly negative, and an analytic extrapolation (not constructed) indicates continued descent. We conclude that the method's positive margin exhausts gradually beginning at the first window's right endpoint, terminating in the second -- a precise range-boundary result. This does NOT imply the Riemann Hypothesis, is not extrapolated past L = log2, and characterizes only this finite-scale construction.
 
-Scope / Honesty statement (for the record):
-- The result is a NEGATIVE / boundary result: it characterizes where a natural
-  method stops working, not a new positivity theorem.
-- It does NOT imply RH. Failure of a sufficient criterion does not imply
-  lambda(L) <= 0.
-- Certify-grade claims are limited to finitely many L-points; whole-window
-  statements are pilot-level or require continuation arguments not given here.
+--- Keywords ---
+Weil quadratic form; explicit formula; finite-scale positivity; Schur complement; certified interval arithmetic; computer-assisted proof; range boundary
+
+--- Scope / Honesty statement (for the record) ---
+- The result is a NEGATIVE / boundary result: it characterizes where a natural method stops working, not a new positivity theorem.
+- It does NOT imply RH. Failure of a sufficient criterion does not imply lambda(L) <= 0.
+- Certify-grade claims are limited to finitely many L-points; whole-window statements are pilot-level or require continuation arguments not given here.
 - No extrapolation past L = log2.
 
-Related identifiers:
+--- Related identifiers ---
 - Companion (main FP-0.35 result): [insert weil-first-prime main paper DOI]
 - Companion (proofctl methodology): [insert methodology paper DOI if separate]
 
-License: (choose, e.g. CC-BY-4.0)
+--- License ---
+(choose, e.g. CC-BY-4.0)

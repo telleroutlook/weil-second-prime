@@ -19,6 +19,10 @@
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 
+%% ── DOI / arXiv hyperlinks ────────────────────────────────────────────────────
+\newcommand{\doi}[1]{\href{https://doi.org/#1}{\texttt{doi:#1}}}
+\newcommand{\arxiv}[1]{\href{https://arxiv.org/abs/#1}{\texttt{arXiv:#1}}}
+
 %% ── Macros ────────────────────────────────────────────────────────────────────
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Q}{\mathbb{Q}}
@@ -41,10 +45,19 @@
 \newcommand{\norm}[1]{\|#1\|}
 
 %% ── Title ─────────────────────────────────────────────────────────────────────
-\title{The Range of a Finite-Scale Weil Positivity Method:\\
+\title[Range of a Finite-Scale Weil Positivity Method]{The Range of a Finite-Scale Weil Positivity Method:\\
        Success in the First Prime Window and Its Termination in the Second}
 
 \author{Lin Tao}
+\address{SAP China, 1717 Nanjing Road West, Shanghai 200040, China}
+\email{teller.lin@outlook.com}
+
+\subjclass[2020]{Primary 11M26; Secondary 65G20, 11M06}
+
+\keywords{Weil quadratic form, explicit formula, finite-scale positivity,
+  Schur complement, certified interval arithmetic, computer-assisted proof,
+  range boundary}
+
 \date{2026-08-09}
 
 \begin{document}
@@ -111,7 +124,7 @@ No extrapolation past $L = \log 2$ is attempted.
 For a Schwartz test function $f$ with support in $(-L,L)$, the \emph{Weil
 explicit formula} expresses a global sum over non-trivial zeros $\rho$ of
 $\zeta(s)$ in terms of an archimedean integral and a sum over primes.
-Weil's criterion states:
+Weil's criterion states \cite{Weil1952,Bombieri2000}:
 \[
   \text{RH} \;\Longleftrightarrow\;
   Q_W^L(f) \;\ge\; 0 \quad
@@ -124,12 +137,14 @@ Defining
   \lambda(L) \;:=\; \inf_{\|f\|=1}\, Q_W^L(f),
 \]
 the equivalence becomes $\lambda(L) \ge 0$ for all $L > 0$.
+Recent independent studies of Weil's quadratic form from complementary
+perspectives include \cite{Suzuki2026,Kim2026,Groskin2026}.
 
 \subsection{The prime windows}
 
 Prime $p$ enters the explicit formula at $L = \tfrac12\log p$, where its shift
-parameter $\tau_p = \log p / L$ crosses~2 (the single-hop regime boundary).
-This creates a sequence of intervals:
+parameter $\tau_p = \log p / L$ crosses~2 (the single-hop regime boundary)
+\cite{Tao2026WFP}.  This creates a sequence of intervals:
 \begin{align*}
   \text{Window 1:}&\quad L \in \bigl(\tfrac12\log 2,\, \tfrac12\log 3\bigr)
     \approx (0.347,\, 0.549), \quad \text{only } p=2 \text{ active};\\
@@ -142,14 +157,15 @@ combinatorial structure of the positivity problem is fixed.
 
 \subsection{The split-residual Schur method}
 
-We work in a Legendre basis $\{P_n\}_{n \ge 0}$ on $L^2(-L,L)$, truncated
+Following \cite{Tao2026WFP}, we work in a Legendre basis $\{P_n\}_{n \ge 0}$ on $L^2(-L,L)$, truncated
 at degree $N$ per parity sector.  In each sector the method assembles a
 finite Schur matrix
 \[
   C \;=\; \bL \cdot F - R_\eta,
 \]
 where $\bL = H_d - \cL - \kappa_L$ is the Archimedean reserve ($H_d$ the
-$d$-th harmonic number, $\cL = \log(2\pi L)+\gamma_E$ the Weil constant,
+$d$-th harmonic number, $\cL = \log(2\pi L)+\gamma_E$ the Weil constant
+\cite{Suzuki2026},
 $\kappa_L$ a bounded correction), $F = T + M^{(0)} + M^{(2)} - \cL G$ encodes
 the Fourier--prime--cross structure, and $R_\eta$ is a residual from the
 split.  The second-moment object $M^{(2)}$ must include all four terms
@@ -165,7 +181,8 @@ in the corresponding sector.  A negative minimum pivot proves only that
 
 Every numerical statement in this paper carries one of three grades:
 \begin{itemize}[leftmargin=2em]
-  \item \certify\ --- outward-rounded interval arithmetic (Arb balls); the
+  \item \certify\ --- outward-rounded interval arithmetic (Arb balls
+    \cite{Johansson2017}); the
     sign verdict is made only when both interval endpoints lie on the same
     side of zero.
   \item \pilot\ --- float-center computation, no interval enclosure;
@@ -223,15 +240,14 @@ $\ltrues{even} \approx +9.5\times10^{-4}$ and
 $\ltrues{odd} \approx +1.90\times10^{-2}$ \pilot, so the certificate
 is conservative by roughly $1.2\times$ (even) and $2.6\times$ (odd).  This
 distinction matters at the right end of the window; see
-\cref{rem:lb-vs-true} below.
+\cref{rem:right-end} below.
 \end{remark}
 
 \begin{remark}[Historical defect]
 An earlier certificate used $S^{(0)} = S_{KK}$ only (three terms omitted),
 which inflated the reported eigenvalue by approximately $16\times$ and yielded
 a false $\llb \approx +0.015$.  The corrected certificate uses all four terms
-and is the one cited here.  Source:
-\texttt{pilots/cert\_fp035\_clean.json} (\texttt{weil-first-prime}).
+and is the one cited here \cite{Tao2026WFP}.
 \end{remark}
 
 \subsection{Shape of \texorpdfstring{$\ltrue(L)$}{λ\_min(L)} across the first window}
@@ -483,7 +499,8 @@ infimum of the window-level $\lambda_{\min}(L) = \min(\ltrues{even},
 \centering
 \caption{Window right-endpoint infimum sequence.}
 \label{tab:sequence}
-\begin{tabular}{@{}llllll@{}}
+\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lllp{.35\textwidth}l@{}}
 \toprule
 Window & Right endpoint & $\cL$ (right end) & $\Lambda_k$ & Grade \\
 \midrule
@@ -590,8 +607,8 @@ We state explicitly what the above does \emph{not} say:
   \item \textbf{Not a statement about RH.}  The method's range is a property
     of the \emph{finite-scale construction}, not of the infinite-dimensional
     Weil operator.  The Riemann zeta zeros (known to satisfy RH to great
-    height numerically) are not the object under study.  Failure of a
-    sufficient criterion does not imply $\lambda(L) \le 0$.
+    height numerically \cite{PlattTrudgian2021}) are not the object under study.
+    Failure of a sufficient criterion does not imply $\lambda(L) \le 0$.
 
   \item \textbf{Not a whole-window certified result.}  Only finitely many
     $L$-points have been certified.  A continuous positivity/negativity
@@ -619,7 +636,7 @@ Weil positivity.  The boundary is not a dead end:
 
   \item The adjudication methodology---outsourcing conjectures to independent
     recomputation and reporting the refutations as results---is itself a
-    contribution to the certification workflow (see \texttt{PROOF\_CONSTITUTION.md}).
+    contribution to the certification workflow \cite{Tao2026Proofctl}.
 \end{enumerate}
 
 \begin{remark}[Honest negative result]
@@ -645,37 +662,37 @@ following entries.
          \texttt{docs/} as indicated.}
 \label{tab:provenance}
 \scriptsize
-\begin{tabular}{@{}lp{.22\textheight}lllp{.18\textheight}l@{}}
+\begin{tabular}{@{}lp{.18\textheight}llp{.20\textheight}p{.13\textheight}p{.22\textheight}@{}}
 \toprule
 ID & Quantity & $L$ & Sector & Value / interval & Grade & Source \\
 \midrule
-P1  & $\lambda_{\mathrm{lb}}$ even                          & $7/20$        & even & $+7.81\times10^{-4}$                        & \certify            & W1: \texttt{lambda\_profile.json} \\
-P2  & $\lambda_{\mathrm{lb}}$ odd                           & $7/20$        & odd  & $+4.92\times10^{-2}$                        & \certify            & W1: \texttt{lambda\_profile.json} \\
-P3  & $c_L$                                                 & $7/20$        & —    & $1355726/993009$                            & exact               & W1: \texttt{cert\_fp035\_clean.json} \\
-P4  & $\ltrue$ even, $d=60$ (kappa-corrected)                 & $0.350$       & even & $+2.6\times10^{-3}$                         & \pilot              & W1: kappa-corrected rescan (old \texttt{window\_shape\_even.checkpoint.json} superseded) \\
+P1  & $\lambda_{\mathrm{lb}}$ even                          & $7/20$        & even & $+7.81\times10^{-4}$                        & \certify            & W1: \path{lambda_profile.json} \\
+P2  & $\lambda_{\mathrm{lb}}$ odd                           & $7/20$        & odd  & $+4.92\times10^{-2}$                        & \certify            & W1: \path{lambda_profile.json} \\
+P3  & $c_L$                                                 & $7/20$        & —    & $1355726/993009$                            & exact               & W1: \path{cert_fp035_clean.json} \\
+P4  & $\ltrue$ even, $d=60$ (kappa-corrected)                 & $0.350$       & even & $+2.6\times10^{-3}$                         & \pilot              & W1: kappa-corrected rescan (old \path{window_shape_even.checkpoint.json} superseded) \\
 P5  & $\ltrue$ even, $d=60$ (kappa-corrected)                 & $0.548$       & even & $+5.2\times10^{-9}$ (knife-edge)            & \pilot              & W1: kappa-corrected rescan \\
 P5b & $\ltrue$ odd, $d$-scan (kappa-corrected)                 & $0.548$       & odd  & $-1.5\times10^{-5}$ ($d{=}60$); $-6.1\times10^{-6}$ ($d{=}80$); $-2.4\times10^{-6}$ ($d{=}100$); $+5.7\times10^{-9}$ ($d{=}120$) & \pilot & W1: kappa-corrected rescan \\
 P6  & certify-indeterminate status, right end                  & ${\approx}0.548$ & odd & interval width ${\sim}2.7\times10^{-4} \gg$ signal ${\sim}10^{-9}$ & certify-indeterminate & W1: tau interval arithmetic analysis \\
-P7  & $\lambda_{\mathrm{lb}}$ vs.\ $\ltrue$ at $L{=}0.42$  & $0.42$        & even & $\lambda_{\mathrm{lb}}=9.31\times10^{-10}$; $\ltrue=+3.19\times10^{-5}$ & \pilot & W1: \texttt{lambda\_profile.json} \\
-P8  & $\max|\Delta C|$ cross                                & $3/5$         & even & $\ge 0.630$                                 & \certify            & W2: \texttt{s4\_certify\_cross\_L060.json} \\
-P9  & $\max|\Delta C|$ cross                                & $3/5$         & odd  & $\ge 0.140$                                 & \certify            & W2: \texttt{s4\_certify\_cross\_L060.json} \\
-P10 & min-pivot (full)                                      & $3/5$         & even & $[-0.01970,\,-0.01968]$                     & \certify            & W2: \texttt{s4\_certify\_cross\_L060.json} \\
-P11 & $\ltrue$ (trusted assembly)                           & $3/5$         & even & $-0.231$                                    & \pilot              & W2: \texttt{independent\_dominance\_anchor.json} \\
-P12 & Layer-1 eig (refuted; reported $+0.077$, true $-0.231$) & $3/5$      & even & refuted                                     & \pilot\ refuted     & W2: \texttt{docs/OUTSOURCED\_VERDICTS\ldots.md} \\
-P13 & $\Delta V$ cross delay test                           & $0.552$       & even & $-2.744$                                    & \pilot              & W2: \texttt{docs/OUTSOURCED\_VERDICTS\ldots.md} §3.2 \\
-P14 & $\Delta V$ cross delay test                           & $0.580$       & even & $-0.403$                                    & \pilot              & W2: \texttt{docs/OUTSOURCED\_VERDICTS\ldots.md} §3.2 \\
-P15 & $\Delta V$ cross delay test                           & $0.600$       & even & $-2.251$                                    & \pilot              & W2: \texttt{docs/OUTSOURCED\_VERDICTS\ldots.md} §3.2 \\
-P16 & $\Delta_{\tau_3}$ (odd pivot contribution of $p{=}3$) & $3/5$         & odd  & $-0.113$                                    & \pilot              & W2: \texttt{s4\_profile\_L060.json} \\
-P17 & $\Delta_{\mathrm{cross}}$ (even pivot contribution)   & $3/5$         & even & $+0.195$                                    & \pilot              & W2: \texttt{s4\_profile\_L060.json} \\
-P18 & min-pivot odd                                         & $11/20$       & odd  & $[-2.815\times10^{-2},\,-1.720\times10^{-2}]$ & \certify          & W2: \texttt{s5\_positivity\_L055.json} \\
-P19 & min-pivot even (indeterminate)                        & $11/20$       & even & $[-3.87\times10^{-4},\,+2.43\times10^{-4}]$& \certify            & W2: \texttt{s5\_positivity\_L055.json} \\
-P20 & $\ltrue$ odd (certify anchor)                         & $69/100$      & odd  & $-0.36911$                                  & \certify\ anchor    & W2: \texttt{shape\_certify\_anchor\_odd.json} \\
-P21 & pivot straddle odd                                    & $69/100$      & odd  & $\approx -0.099$                            & \certify            & W2: \texttt{shape\_certify\_anchor\_odd.json} \\
-P22 & $\ltrue$ even (certify anchor)                        & $67/100$      & even & $-0.28596$                                  & \certify\ anchor    & W2: \texttt{shape\_certify\_anchor.json} \\
-P23 & Odd pilot curve (9 pts, monotone)                     & window 2      & odd  & $-0.118 \to -0.369$                         & \pilot              & W2: \texttt{shape\_odd\_N7.json} \\
-P24 & Even pilot curve (7 pts)                              & window 2      & even & $-0.093 \to -0.286$                         & \pilot              & W2: \texttt{shape\_even\_N8.json} \\
-P25 & $d$-refinement (even basin not $d$-robust)            & $0.66$--$0.69$& even & artefact                                    & \pilot              & W2: \texttt{docs/SECOND\_WINDOW\_LAMBDA\_SHAPE.md} §2 \\
-P26 & $\Lambda_2$ window-2 right-end infimum                & ${\to}\log2^-$& odd  & $\approx -0.37$                             & \certify\ anchor    & W2: \texttt{shape\_certify\_anchor\_odd.json} (=P20) \\
+P7  & $\lambda_{\mathrm{lb}}$ vs.\ $\ltrue$ at $L{=}0.42$  & $0.42$        & even & $\lambda_{\mathrm{lb}}=9.31\times10^{-10}$; $\ltrue=+3.19\times10^{-5}$ & \pilot & W1: \path{lambda_profile.json} \\
+P8  & $\max|\Delta C|$ cross                                & $3/5$         & even & $\ge 0.630$                                 & \certify            & W2: \path{s4_certify_cross_L060.json} \\
+P9  & $\max|\Delta C|$ cross                                & $3/5$         & odd  & $\ge 0.140$                                 & \certify            & W2: \path{s4_certify_cross_L060.json} \\
+P10 & min-pivot (full)                                      & $3/5$         & even & $[-0.01970,\,-0.01968]$                     & \certify            & W2: \path{s4_certify_cross_L060.json} \\
+P11 & $\ltrue$ (trusted assembly)                           & $3/5$         & even & $-0.231$                                    & \pilot              & W2: \path{independent_dominance_anchor.json} \\
+P12 & Layer-1 eig (refuted; reported $+0.077$, true $-0.231$) & $3/5$      & even & refuted                                     & \pilot\ refuted     & W2: \path{docs/OUTSOURCED_VERDICTS....md} \\
+P13 & $\Delta V$ cross delay test                           & $0.552$       & even & $-2.744$                                    & \pilot              & W2: \path{docs/OUTSOURCED_VERDICTS....md} §3.2 \\
+P14 & $\Delta V$ cross delay test                           & $0.580$       & even & $-0.403$                                    & \pilot              & W2: \path{docs/OUTSOURCED_VERDICTS....md} §3.2 \\
+P15 & $\Delta V$ cross delay test                           & $0.600$       & even & $-2.251$                                    & \pilot              & W2: \path{docs/OUTSOURCED_VERDICTS....md} §3.2 \\
+P16 & $\Delta_{\tau_3}$ (odd pivot contribution of $p{=}3$) & $3/5$         & odd  & $-0.113$                                    & \pilot              & W2: \path{s4_profile_L060.json} \\
+P17 & $\Delta_{\mathrm{cross}}$ (even pivot contribution)   & $3/5$         & even & $+0.195$                                    & \pilot              & W2: \path{s4_profile_L060.json} \\
+P18 & min-pivot odd                                         & $11/20$       & odd  & $[-2.815\times10^{-2},\,-1.720\times10^{-2}]$ & \certify          & W2: \path{s5_positivity_L055.json} \\
+P19 & min-pivot even (indeterminate)                        & $11/20$       & even & $[-3.87\times10^{-4},\,+2.43\times10^{-4}]$& \certify            & W2: \path{s5_positivity_L055.json} \\
+P20 & $\ltrue$ odd (certify anchor)                         & $69/100$      & odd  & $-0.36911$                                  & \certify\ anchor    & W2: \path{shape_certify_anchor_odd.json} \\
+P21 & pivot straddle odd                                    & $69/100$      & odd  & $\approx -0.099$                            & \certify            & W2: \path{shape_certify_anchor_odd.json} \\
+P22 & $\ltrue$ even (certify anchor)                        & $67/100$      & even & $-0.28596$                                  & \certify\ anchor    & W2: \path{shape_certify_anchor.json} \\
+P23 & Odd pilot curve (9 pts, monotone)                     & window 2      & odd  & $-0.118 \to -0.369$                         & \pilot              & W2: \path{shape_odd_N7.json} \\
+P24 & Even pilot curve (7 pts)                              & window 2      & even & $-0.093 \to -0.286$                         & \pilot              & W2: \path{shape_even_N8.json} \\
+P25 & $d$-refinement (even basin not $d$-robust)            & $0.66$--$0.69$& even & artefact                                    & \pilot              & W2: \path{docs/SECOND_WINDOW_LAMBDA_SHAPE.md} §2 \\
+P26 & $\Lambda_2$ window-2 right-end infimum                & ${\to}\log2^-$& odd  & $\approx -0.37$                             & \certify\ anchor    & W2: \path{shape_certify_anchor_odd.json} (=P20) \\
 \bottomrule
 \end{tabular}
 \end{sidewaystable}
@@ -697,5 +714,63 @@ P26 & $\Lambda_2$ window-2 right-end infimum                & ${\to}\log2^-$& od
     is separately certified by interval arithmetic (straddle confirmed).
     The eigenvalue itself is not an interval-enclosure result.
 \end{itemize}
+
+\begin{thebibliography}{99}
+
+\bibitem{Weil1952}
+A.~Weil,
+\emph{Sur les ``formules explicites'' de la th\'eorie des nombres premiers},
+Comm.\ S\'em.\ Math.\ Univ.\ Lund, volume d\'edi\'e \`a Marcel Riesz (1952),
+252--265.
+
+\bibitem{Bombieri2000}
+E.~Bombieri,
+\emph{Remarks on {W}eil's quadratic functional in the theory of prime numbers,
+{I}},
+Rend.\ Mat.\ Acc.\ Lincei \textbf{11} (2000), 183--233.
+
+\bibitem{Suzuki2026}
+M.~Suzuki,
+\emph{Weil's quadratic form via the screw function},
+\arxiv{2606.09096} (2026).
+
+\bibitem{Kim2026}
+T.~Kim, Y.~Hong, M.~Kim, S.~Choi, J.~Jang, and M.~Kim,
+\emph{A numerical realization of {S}uzuki's {W}eil-quadratic-form operator:
+the archimedean spectral law, its universality, and an operator form of
+{W}eil's positivity criterion},
+\arxiv{2607.24830} (2026).
+
+\bibitem{Groskin2026}
+A.~Groskin,
+\emph{A finite {G}uinand--{W}eil dictionary and archimedean tail order for the
+truncated {W}eil quadratic form},
+\arxiv{2607.02828} (2026).
+
+\bibitem{Johansson2017}
+F.~Johansson,
+\emph{Arb: efficient arbitrary-precision midpoint-radius interval arithmetic},
+IEEE Trans.\ Comput.\ \textbf{66} (2017), 1281--1292.
+
+\bibitem{Tao2026WFP}
+L.~Tao,
+\emph{Structural Lemmas for the First-Prime Window of the {W}eil Quadratic
+Form},
+preprint, Zenodo (2026),
+\doi{10.5281/zenodo.21807498}.
+
+\bibitem{Tao2026Proofctl}
+L.~Tao,
+\emph{When the Pilot Audits the Tool: Two Verification Blind Spots Exposed and
+Closed},
+preprint, Zenodo (2026),
+\doi{10.5281/zenodo.21847941}.
+
+\bibitem{PlattTrudgian2021}
+D.~J.~Platt and T.~S.~Trudgian,
+\emph{The {R}iemann hypothesis is true up to $3\times 10^{12}$},
+Bull.\ London Math.\ Soc.\ \textbf{53} (2021), 792--797.
+
+\end{thebibliography}
 
 \end{document}

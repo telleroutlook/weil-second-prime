@@ -107,6 +107,27 @@ class TestBernsteinMkBound:
         assert 0 < float(bernstein) < 1e-4
 
 
+    def test_bound_grows_with_n_row(self) -> None:
+        """Corrected M_f includes (2R)^{n_row}: bound grows with polynomial degree."""
+        h = Fraction(1, 16)
+        b0 = bernstein_mk_bound(A_NUM, A_DEN, 0, 0, h, n_gl=8)
+        b5 = bernstein_mk_bound(A_NUM, A_DEN, 5, 5, h, n_gl=8)
+        b15 = bernstein_mk_bound(A_NUM, A_DEN, 15, 15, h, n_gl=8)
+        assert b0 < b5 < b15
+
+    def test_high_degree_bound_exceeds_one(self) -> None:
+        """For very high n_row (>> 2*n_gl=16), Bernstein bound exceeds 1 (not
+        useful for positive certify — honest, not artificially small).
+        For second-window a=14/25, n_row=67 (N=35): bound >> 1."""
+        h = Fraction(1, 16)
+        # n_row=67 (N=35 second window): bound should be astronomically large
+        b_high = bernstein_mk_bound(14, 25, 67, 69, h, n_gl=8)
+        assert b_high > 1
+        # n_row=0: bound is tiny (baseline sanity check)
+        b_low = bernstein_mk_bound(14, 25, 0, 0, h, n_gl=8)
+        assert b_low < 1e-20
+
+
 class TestPiLoBound:
     def test_pi_lo_is_lower_bound(self) -> None:
         """PI_LO must be < pi. Verify 314159265/100000000 < pi

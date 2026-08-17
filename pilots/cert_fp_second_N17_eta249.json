@@ -1,0 +1,12 @@
+{
+  "L": "5600/10000",
+  "L_float": 0.56,
+  "sector": "odd",
+  "N": 17,
+  "d": 35,
+  "eta": "249/100",
+  "eta_float": 2.49,
+  "certified": false,
+  "elapsed_s": 5.7,
+  "error": "Pivot at (2,2) not strictly positive: [-2.334459e-03, 4.899903e-03]. Increase precision, refine integral witnesses, or increase N."
+}

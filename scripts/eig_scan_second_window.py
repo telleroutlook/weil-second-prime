@@ -36,7 +36,8 @@ from pathlib import Path
 
 import numpy as np
 
-from checker.fp035.recompute_schur import build_matrices, _c_L, _H, KAPPA_FLOAT, L0
+from checker.fp035.recompute_schur import build_matrices, _c_L, _H, L0
+from src.archimedean.kernel import kappa as compute_kappa
 from src.prime_layer.legendre_shift_2prime import (
     C2, C3, compute_J, compute_E, compute_F, tau2_at, tau3_at, window_check,
 )
@@ -44,14 +45,14 @@ from src.prime_layer.legendre_shift_2prime import (
 ETA = 0.5
 
 
-def _schur_eig(arch, M2, S2, d, L):
+def _schur_eig(arch, M2, S2, d, L, kappa_val):
     Gd = arch["Gd"]; T = arch["T"]; M0 = arch["M0"]; S0 = arch["S0"]
     Ginv = np.diag([1.0 / g for g in Gd])
     R0 = S0 - M0.T @ Ginv @ M0
     R2 = S2 - M2.T @ Ginv @ M2
     R_eta = (1 + ETA) * R0 + (1 + 1.0 / ETA) * R2
     cL = _c_L(L)
-    b_L = _H(d) - cL - L0 - KAPPA_FLOAT
+    b_L = _H(d) - cL - L0 - kappa_val
     F = T + M0 + M2 - cL * np.diag(Gd)
     C = 0.5 * ((b_L * F - R_eta) + (b_L * F - R_eta).T)
     e = np.linalg.eigvalsh(C)
@@ -63,6 +64,8 @@ def scan_L(L_num: int, L_den: int, sector: str, N: int) -> dict:
     parity = 0 if sector == "even" else 1
     d = 2 * N + parity
     arch = build_matrices(L_num, L_den, sector, N)
+    kappa_val = float(compute_kappa(L_num, L_den, prec=128))
+    print(f"  kappa({L_num}/{L_den}) = {kappa_val:.6f}", flush=True)
     indices = arch["indices"]
     tau2 = tau2_at(L); tau3 = tau3_at(L)
     n = len(indices)
@@ -81,11 +84,12 @@ def scan_L(L_num: int, L_den: int, sector: str, N: int) -> dict:
             S2_off[a, b] = base
             S2_p1[a, b] = C2 * C2 * E2
 
-    ef0, ef1 = _schur_eig(arch, M2_full, S2_full, d, L)
-    eo0, eo1 = _schur_eig(arch, M2_full, S2_off, d, L)
-    ep0, ep1 = _schur_eig(arch, M2_p1, S2_p1, d, L)
+    ef0, ef1 = _schur_eig(arch, M2_full, S2_full, d, L, kappa_val)
+    eo0, eo1 = _schur_eig(arch, M2_full, S2_off, d, L, kappa_val)
+    ep0, ep1 = _schur_eig(arch, M2_p1, S2_p1, d, L, kappa_val)
     return {
         "L": f"{L_num}/{L_den}", "L_float": L, "sector": sector, "N": N, "d": d,
+        "kappa": kappa_val,
         "eig_full_min": ef0, "eig_full_gap": ef1 - ef0,
         "eig_off_min": eo0, "eig_off_gap": eo1 - eo0,
         "eig_p1_min": ep0, "eig_p1_gap": ep1 - ep0,

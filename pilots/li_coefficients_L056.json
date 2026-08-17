@@ -1,0 +1,38 @@
+{
+  "description": "Li coefficients lambda_n = 2*Re[sum_{k=1}^{K} (1-(1-1/rho_k)^n)], K=500 zero pairs. Li criterion: RH <=> lambda_n >= 0 for all n. Comparison: second-window Schur eig_full(N) is a different convergent.",
+  "grade": "pilot (float, partial zero sum)",
+  "K_zeros": 500,
+  "n_max": 20,
+  "elapsed_s": 38.6,
+  "lambdas": {
+    "1": 0.02194692000403714,
+    "2": 0.08775057989431286,
+    "3": 0.19729982298317983,
+    "4": 0.35040986639093075,
+    "5": 0.5468230161391519,
+    "6": 0.7862096636804922,
+    "7": 1.0681695592906584,
+    "8": 1.3922333564795741,
+    "9": 1.7578644203380533,
+    "10": 2.1644608915300108,
+    "11": 2.611357996474014,
+    "12": 3.097830593137495,
+    "13": 3.623095940797581,
+    "14": 4.186316681109442,
+    "15": 4.786604016871169,
+    "16": 5.423021073988011,
+    "17": 6.094586431322663,
+    "18": 6.800277802376001,
+    "19": 7.539035852077817,
+    "20": 8.309768131382897
+  },
+  "schur_eig_full_reference": {
+    "7": -0.5747,
+    "9": -0.3895,
+    "11": -0.277,
+    "13": -0.1879,
+    "15": -0.1155,
+    "17": -0.076
+  },
+  "note": "lambda_n values are all positive (consistent with RH), growing as O(n log n). The Schur eig_full(N) is a separate convergent: it measures min-eigenvalue of the truncated Schur matrix, not the Li sum. Both are truncated approximations that improve with more terms (N or K)."
+}

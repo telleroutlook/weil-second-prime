@@ -1,0 +1,19 @@
+{
+  "description": "H3 pilot: HTF rayleigh_certificate vs numpy lambda_min",
+  "L": "56/100",
+  "L_float": 0.56,
+  "sector": "odd",
+  "N": 5,
+  "b_L": -0.871365,
+  "lambda_min_numpy": -0.78519889,
+  "htf_rayleigh_midpoint": -0.78519889,
+  "htf_rayleigh_radius": 1.1102230246251568e-16,
+  "htf_upper_bound": -0.78519889,
+  "relative_error": 0.0,
+  "h3a_criterion_pass": true,
+  "grade": "pilot (float Schur + Arb Rayleigh quotient)",
+  "assurance": "rigorous",
+  "notes": "H3 pilot L=56/100 N=5",
+  "build_time_s": 87.7,
+  "htf_time_s": 0.018
+}

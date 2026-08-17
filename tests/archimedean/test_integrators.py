@@ -197,3 +197,88 @@ class TestIntegrateStub:
         from checker.archimedean.integrate import IntegrationUnavailable, _check_deps
         with pytest.raises(IntegrationUnavailable):
             _check_deps()
+
+
+class TestRichardsonRemainder:
+    """Richardson GL-8/GL-4 mode (use_bernstein=False) gives valid enclosures."""
+
+    @pytest.mark.skipif(
+        not __import__("importlib").util.find_spec("flint"),
+        reason="python-flint not installed"
+    )
+    def test_richardson_interval_contains_bernstein(self) -> None:
+        """Richardson and Bernstein intervals must agree (overlap) for small n_row."""
+        from src.archimedean.integrator_a import integrate_M_K
+        r_b = integrate_M_K(0, 0, 7, 20, depth=2, prec=128, use_bernstein=True)
+        r_r = integrate_M_K(0, 0, 7, 20, depth=2, prec=128, use_bernstein=False)
+        iv_b = r_b.to_interval()
+        iv_r = r_r.to_interval()
+        # Intervals must overlap: lo_r <= hi_b and lo_b <= hi_r
+        assert iv_r[0] <= iv_b[1] and iv_b[0] <= iv_r[1], (
+            f"Richardson {iv_r} and Bernstein {iv_b} intervals do not overlap"
+        )
+
+    @pytest.mark.skipif(
+        not __import__("importlib").util.find_spec("flint"),
+        reason="python-flint not installed"
+    )
+    def test_richardson_high_degree(self) -> None:
+        """Richardson mode must return a finite interval even for large n_row where
+        Bernstein bound >> 1."""
+        from src.archimedean.integrator_a import integrate_M_K
+        # n_row=29 is above the ~38 Bernstein usability threshold for second window
+        r = integrate_M_K(29, 29, 14, 25, depth=2, prec=128, use_bernstein=False)
+        iv = r.to_interval()
+        # Width must be finite and not astronomically large
+        width = float(iv[1] - iv[0])
+        assert width < 1.0, f"Richardson remainder too wide: {width}"
+
+
+class TestSkkSvkBernsteinBlowupRegression:
+    """Regression tests for the S_KK/S_VK Bernstein blowup fix.
+
+    For second window a=14/25, k≥43 gives Bernstein bound (2R)^k >> 1.
+    integrate_S_KK and integrate_S_VK call integrate_M_K for k up to
+    n_row+n_col+4. With n_row+n_col > 38, k_max > 43 and Bernstein would
+    produce astronomically wide intervals. The fix uses use_bernstein=False
+    (Richardson) for all internal integrate_M_K calls in S_KK and S_VK.
+    """
+
+    @pytest.mark.skipif(
+        not __import__("importlib").util.find_spec("flint"),
+        reason="python-flint not installed"
+    )
+    def test_s_kk_second_window_high_degree(self) -> None:
+        """S_KK(20, 20) with second-window a=14/25 must have finite width.
+
+        k_max = 20+20+4 = 44 > 43: Bernstein would blow up at k=43,44.
+        With Richardson fix, interval width must be < 10 (not 10^17+).
+        """
+        from src.archimedean.integrator_a import integrate_S_KK
+        r = integrate_S_KK(20, 20, 14, 25, depth=1, prec=128)
+        iv = r.to_interval()
+        width = float(iv[1] - iv[0])
+        assert width < 10.0, (
+            f"S_KK Bernstein blowup regression: width={width:.3e}. "
+            "use_bernstein=False fix in integrate_S_KK may have been reverted."
+        )
+
+    @pytest.mark.skipif(
+        not __import__("importlib").util.find_spec("flint"),
+        reason="python-flint not installed"
+    )
+    def test_s_vk_second_window_high_degree(self) -> None:
+        """S_VK(20, 20) with second-window a=14/25 must have finite width.
+
+        k_max search can reach 44 > 43: Bernstein would blow up at k=43,44.
+        With Richardson fix, interval width must be < 10 (not 10^17+).
+        """
+        from src.archimedean.integrator_a import integrate_S_VK
+        r = integrate_S_VK(20, 20, 14, 25, depth=1, prec=128)
+        iv = r.to_interval()
+        width = float(iv[1] - iv[0])
+        assert width < 10.0, (
+            f"S_VK Bernstein blowup regression: width={width:.3e}. "
+            "use_bernstein=False fix in integrate_S_VK may have been reverted."
+        )
+        assert iv[1] > iv[0], "Empty interval from Richardson mode"

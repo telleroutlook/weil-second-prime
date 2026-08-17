@@ -72,7 +72,8 @@ def build_matrices(L_num: int, L_den: int, sector: str, N: int):
     for a, i in enumerate(indices):
         for b, j in enumerate(indices):
             V_ij = _mid_iv(V_matrix_entry(i, j, 256))
-            K_ij = _mid_r(integrate_M_K(i, j, L_num, L_den, depth=4, use_bernstein=False))
+            K_ij = _mid_r(integrate_M_K(i, j, L_num, L_den, depth=4,
+                                         use_bernstein=False, skip_remainder=True))
             svv = _mid_iv(V2_matrix_entry(i, j, 256))
             svk = _mid_r(integrate_S_VK(i, j, L_num, L_den, depth=4))
             skv = _mid_r(integrate_S_VK(j, i, L_num, L_den, depth=4))
