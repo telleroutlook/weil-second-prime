@@ -47,14 +47,17 @@ $-0.02395$ at $k=20$** (cumulative ratio 0.832 from k=18, monotone). IR-block de
 8-pt exp+B model ($B_0=+0.008$, RMS $8.2\times10^{-4}$) better than the $B=0$ forced model.
 The second eigenvalue $\lambda_1$ confirmed zero-crossing at $k=18$ ($n_\text{neg}$ drops
 2→1), matching the $B_1=+0.045$ prediction.
-**Current status (2026-08-18): dual-mode tracking followed by a decisive k=28 frontier mode.** Chain k=18..28 is complete. The tracked UV branch crosses zero at k=25 and remains positive through k=28; the IR branch also remains positive. However, k=28 introduces a distinct negative frontier minimum: at η=1, $\lambda_0=-1.81816\times10^{-1}$, $\lambda_1=+1.86550\times10^{-6}$ (IR), and $\lambda_2=+1.29730\times10^{-2}$ (continuing UV). Every scanned $\eta\in[0.5,2.0]$ has $n_\text{neg}=1$. Thus the positive k=25..27 minima were an IR-branch window, not evidence of a global positive infimum. The corrected 16-point tracked-UV fit gives $B_0^\text{UV}=+0.02361$ (RMS $1.33\times10^{-3}$, P>0 = 1.0000, CI [+0.02028,+0.02917]); a bounded four-point IR fit gives +8.4655e-6 but is upper-censored at 1e-5. The new mode is dominated by $P_{53}$--$P_{55}$ coupling: its float Rayleigh split is $+2.07336-4.47559+2.22041=-0.181816$. This is discovery-grade only. Arb attempts at N=25 and N=27 remain finite-scale checks and cannot erase the k=28 negative pilot.
+**Current status (2026-08-18, corrected): raw-GL sign quarantine.** The k=18..28 submatrix chain used `skip_remainder=True` for $M_K$. Its high-degree centers are not sign-safe: raw GL8 gave $M_0(P55,P55)=0.422735$, while the focused Richardson-Arb enclosure is $[0.012416,0.012561]$. For the integer witness $v=3P_{53}+P_{55}$ suggested by the false spectrum, the focused audit gives $v^TCv\in[+0.2292033466,+0.3953780542]$, entirely positive. Therefore the apparent k=28 negative frontier mode, UV/IR branch narrative, and all associated B0/bootstrap fits are withdrawn. The focused result does not prove full-matrix positive definiteness. N=25 and N=27 remain finite-scale min-pivot checks.
 
-Two numerical traps encountered in the second-window adaptation are documented:
+Three numerical traps encountered in the second-window adaptation are documented:
 a kappa-contamination bug (importing a first-window constant $\kappa=1.255$ when
 the correct value is $\kappa(L=0.56)=2.056$) that produced a spurious positive
 signal; and a Bernstein-blowup bug in the $S_{KK}/S_{VK}$ integrators that yields
-interval widths $\gg1$ for loop index $k\ge43$. Both are proposed as a new
-proofctl condition class C12 (parameter-default propagation blowup).
+interval widths $\gg1$ for loop index $k\ge43$; and a raw-center pilot-sign trap
+in which `skip_remainder=True` produced a false k=28 negative mode. The first two
+suggest proofctl condition class C12 (parameter-default propagation blowup); the
+third suggests C13 (pilot-sign firewall: raw-center outputs cannot enter sign
+narratives without an explicit remainder enclosure).
 
 ---
 
@@ -247,10 +250,10 @@ consequences.
 | A13 | min-pivot interval ($N{=}17$, odd) | $14/25$ | odd | $(2,2)\in[-9.03\!\times\!10^{-4},\ +3.27\!\times\!10^{-3}]$ — indeterminate | [certify] | `pilots/cert_fp_second_N17.json` |
 | A15 | min-pivot interval ($N{=}19$, $\eta{=}0.1$, odd) | $14/25$ | odd | $(0,0)\in[-3.80\!\times\!10^{-2},\ -5.15\!\times\!10^{-4}]$ — **certifiably negative** (upper $<0$) | [certify] | `pilots/cert_fp_second_N19_eta01.json` |
 | A14 | N-convergence float scan (corrected $\kappa{=}2.056$) | $14/25$ | odd | $N{=}7..17$: $-0.575,-0.390,-0.277,-0.188,-0.116,-0.076$ | [pilot] | `pilots/eig_scan_corrected_N*_final.json` |
-| A16 | Sub-matrix chain $k=18..22$ ($\lambda_0$ sequence) | $14/25$ | odd | $-0.049,-0.038,-0.027,-0.019,-0.011$ (η=1.0) | [pilot] | `pilots/submatrix_k18..22.json` |
-| A17 | Tracked UV-mode fit (16-pt, $k=13..28$) + bootstrap | $27/27$ | odd | $B_0^\text{UV}=+0.02361$; 95% CI $[+0.02028,+0.02917]$; P($B_0^\text{UV}>0$)=1.0000; IR 4-pt fit +8.4655e-6 is upper-censored | [pilot] | `scripts/fit_b0.py` |
-| A18 | Sub-matrix chain k=18..27, dual-mode window | $27/27$ | odd | λ_IR(k=25..27)=[1.537e-6,1.643e-6,1.763e-6]; λ_UV=[3.25e-3,7.44e-3,12.29e-3]; n_neg=0 ∀η at k=27 | [pilot] | `scripts/submatrix_chain.py` |
-| A19 | k=28 frontier mode | $28/28$ | odd | λ₀=-0.181816 (η=1), best scanned η=0.5 gives -0.132969; IR λ₁=+1.865502e-6; continuing UV λ₂=+0.012973; n_neg=1 ∀η | [pilot] | `pilots/submatrix_k28.json` |
+| A16 | Legacy sub-matrix chain $k=18..22$ | $14/25$ | odd | Raw-GL8 $M_K$ centers; sign sequence quarantined | [pilot quarantined] | `pilots/submatrix_k18..22.json` |
+| A17 | Legacy UV/IR/B0 fits | $27/27$ | odd | All B0/bootstrap and branch claims withdrawn | [pilot withdrawn] | `scripts/fit_b0.py` |
+| A18 | Legacy dual-mode chain k=18..27 | $27/27$ | odd | Mode labels/sign changes not remainder-safe | [pilot quarantined] | `pilots/submatrix_k18..27.json` |
+| A19 | Focused k=28 raw-GL refutation | $28/28$ | odd | $v=3P53+P55$: Rayleigh interval $[+0.2292033466,+0.3953780542]$; nonnegative witness, no full-matrix positivity claim | [Arb/Richardson pilot] | `pilots/cert_fp_second_N28_frontier_eta1_p512.json` |
 
 Constants: $c_2=\log2/\sqrt2=0.4901$, $c_3=\log3/\sqrt3=0.6343$;
 $c_L=\log(2\pi L)+\gamma$ ($=1.816$ at $L=0.549$, $2.049$ at $L=0.693$). All
@@ -419,46 +422,26 @@ At $k=12$ (where $b_L < 0$), all 12 eigenvalues are negative. At $k=13$ ($b_L$
 first positive), $n_{\text{neg}}$ drops from 12 to 8 — a phase transition. From
 $k=13$ onward, $n_{\text{neg}}$ decreases monotonically: $8 \to 6 \to 5 \to 3 \to 2 \to \mathbf{1}$.
 
-**Second eigenvalue $\lambda_1$ confirmed zero-crossing at $k=17{-}18$:**
-$n_\text{neg}$ drops from 2 to 1 at $k=18$; $\lambda_1(k=18) = +0.004 > 0$, confirming
-the 5-point NLS prediction $\lambda_1(N) \approx -1.84 \cdot (0.805)^N + 0.045$,
-asymptote $B_1 = +0.045$ (clearly positive). **Only $\lambda_0$ remains negative.**
+**Correction (2026-08-18): the entire legacy mode/B0 narrative is withdrawn.**
+The chain rows used raw GL8 $M_K$ centers without a truncation-remainder
+enclosure. Consequently the former $\lambda_1$ zero-crossing claim, $\lambda_0$
+convergence fits, UV/IR branch tracking, and all B0/bootstrap intervals above are
+not sign-safe evidence.
 
-**Convergence model for $\lambda_0$ (k=13..22, 10 pts):** accelerating rate; r(21→22)=0.566.
-Step-wise ratios: $0.799, 0.772, 0.801, 0.792, 0.779, 0.770, 0.728, 0.687, \mathbf{0.566}$. Mean $\bar r \approx 0.749$ (accelerating downward — rate itself shrinking, consistent with $B_0 > 0$).
+The focused k=28 audit isolated the apparent $P_{53}$--$P_{55}$ failure and
+computed the two required M0 columns with Richardson GL-8/GL-4 coverage:
 
-| Model | $B_0$ | $\lambda_0(22)$ pred | **actual** | $\lambda_0(25)$ pred | RMS |
-|-------|--------|-------------|------------|-------------|-----|
-| $Ar^k + B$ (3-param, 10-pt) | $\mathbf{+0.016}$ | — | $\mathbf{-0.01066}$ | $\mathbf{+0.0007}$ | **$1.16\times10^{-3}$** |
-| $Ar^k$ ($B{=}0$, forced, 10-pt) | $0$ | $-0.012$ | $-0.01066$ | $-0.004$ | $1.6\times10^{-3}$ |
-| Component: $B_0 = -0.029$ | $-0.029$ | $-0.049$ ✗ | $-0.01066$ | $-0.032$ | — (rejected) |
+| Quantity | Legacy raw-GL value | Richardson-Arb enclosure/center |
+|---|---:|---:|
+| $M_0(P53,P53)$ | $0.050151$ | center $0.012955$, radius $0.000144$ |
+| $M_0(P53,P55)$ | $-0.138160$ | center $0.009174$, radius $0.000127$ |
+| $M_0(P55,P55)$ | $0.422735$ | center $0.012488$, radius $0.000073$ |
+| $v^TCv$, $v=3P53+P55$ | $-1.77946$ | $[+0.2292033466,+0.3953780542]$ |
 
-10-pt fit selects Exp+B ($B_0=+0.016$, RMS $1.16\times10^{-3}$). **16-point tracked-UV bootstrap** (k=13..28, seed 20260818): **$B_0^\text{UV}=+0.02361$**, A=−2.031, r=0.831, RMS=1.33e-3. 95% CI=[+0.02028,+0.02917] — entirely positive. P($B_0^\text{UV}>0$)=**1.0000**.
+The apparent negative mode was therefore a quadrature artifact. The positive
+focused witness interval is not a full-matrix positive-definiteness claim.
 
-**Critical correction (2026-08-18): mode tracking, then a third frontier mode.** The eigenvalue λ₀ is NOT a single converging sequence. At k=25, λ₀ jumps from the UV branch (which crossed zero) to the IR branch (a small positive eigenvalue ~1.5e-6 that was λ₁ for k≤24). At k=28 a new negative frontier mode enters at λ₀. The earlier 15-point UV fit ($B_0^\text{UV}=+0.02319$) was correct for k≤27 but must be updated with the correctly identified k=28 UV ordinate λ₂. Three mode classes are:
-
-| Branch | Regime | Values (k=25..28) | Asymptote / status |
-|--------|--------|-------------------|-----------|
-| UV mode (λ₁ at k=25..27, λ₂ at k=28) | continuing post-crossing branch | 3.25e-3, 7.44e-3, 12.29e-3, 12.97e-3 | $B_0^\text{UV}=+0.02361$ |
-| IR mode (λ₀ at k=25..27, λ₁ at k=28) | small positive branch | 1.537e-6, 1.643e-6, 1.763e-6, 1.866e-6 | bounded 4-pt estimate +8.4655e-6, upper-censored |
-| Frontier mode (λ₀ at k=28) | new negative minimum | −0.181816 at η=1; −0.132969 at η=0.5 | dominates global pilot infimum |
-
-All 11 tracked IR values (k=18..28) are positive, but that empirical fact does not imply $B_0>0$ for the full quadratic form: the k=28 frontier mode is negative at every scanned η.
-
-**k=28 frontier decomposition.** The minimum eigenvector has its largest weights on
-$P_{53}$ ($|v|^2=0.8896$) and the newly added $P_{55}$ ($|v|^2=0.0956$). With the
-blocks split at $P_{53}|P_{55}$, the float Rayleigh quotient is
-\[
-  +2.07336_{\text{low block}}
-  -4.47559_{\text{cross}}
-  +2.22041_{P_{55}\text{ diagonal}}
-  = -0.181816.
-\]
-All diagonal entries in the reconstruction are positive; the failure is caused by
-high-degree off-diagonal coupling. This decomposition is discovery-grade and must
-not be presented as an Arb certificate.
-
-**UV-mode decomposition: the constant UV-cross term (2026-08-16, critical finding).**
+**Withdrawn UV-mode decomposition (legacy raw-GL forensic history).**
 Decomposing $\lambda_0 = v^T C v$ into three parts using the min-eigenvector $v$:
 
 $$\lambda_0 = \underbrace{C_{kk}|v_\text{UV}|^2}_{\text{UV-diag}} + \underbrace{2v_\text{UV}\!\!\sum_{j<k} C_{jk} v_j}_{\text{UV-cross}} + \underbrace{v_\text{IR}^T C_\text{IR} v_\text{IR}}_{\text{IR-block}}$$

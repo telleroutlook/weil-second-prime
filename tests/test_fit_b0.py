@@ -24,7 +24,11 @@ def test_fit_mode_scales_ir_branch() -> None:
 
 
 def test_load_modes_separates_k28_frontier_mode() -> None:
-    """k=28's negative λ₀ must not be merged into the continuing UV branch."""
+    """Check ordinal separation on the quarantined legacy k=28 artifact.
+
+    This tests the bookkeeping algorithm only; the legacy raw-GL values are not
+    evidence for the mathematical mode structure.
+    """
     uv_k, uv_lam, ir_k, ir_lam, frontier_k, frontier_lam = load_modes()
 
     assert uv_k[-1] == 28

@@ -22,6 +22,14 @@ from scipy.optimize import curve_fit
 PILOTS = pathlib.Path("pilots")
 
 
+def spectrum_prefix() -> str:
+    """Return the corrected chain prefix, or the legacy raw-GL prefix."""
+    for k in range(18, 35):
+        if (PILOTS / f"submatrix_rich_k{k:02d}.json").exists():
+            return "submatrix_rich_k"
+    return "submatrix_k"
+
+
 def load_modes():
     """Return tracked UV, IR, and new frontier-minimum modes.
 
@@ -45,7 +53,7 @@ def load_modes():
 
     # k=18..max from individual files
     for k in range(18, 35):
-        p = PILOTS / f"submatrix_k{k:02d}.json"
+        p = PILOTS / f"{spectrum_prefix()}{k:02d}.json"
         if not p.exists():
             break
         d = json.load(open(p))
@@ -152,6 +160,13 @@ if __name__ == "__main__":
                 ir_k[-1] if len(ir_k) else 0,
                 frontier_k[-1] if len(frontier_k) else 0)
     print("Grade: discovery pilot (float eigenvalues); not certificate evidence.")
+    prefix = spectrum_prefix()
+    if prefix == "submatrix_k":
+        print(
+            "WARNING: legacy submatrix_k*.json used raw-GL8 M_K centers "
+            "(skip_remainder=True). Sign/mode fits from this input are "
+            "quarantined until submatrix_rich_k*.json replaces them."
+        )
     print("Bootstrap seed: 20260818")
 
     print(f"UV mode ({len(uv_k)} pts, k={uv_k[0]}..{uv_k[-1]}):")

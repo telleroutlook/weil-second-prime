@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-18  
 **Grade:** analysis (float pilot data + certified anchors)  
-**Status:** Working document; **DUAL-MODE STRUCTURE DISCOVERED (2026-08-17), THEN SUPERSEDED BY A k=28 FRONTIER MODE (2026-08-18)**. The tracked UV branch remains positive (16-pt fit B₀^UV=+0.02361, bootstrap CI [+0.02028,+0.02917]) and the IR branch remains positive (λ=+1.8655e-6 at k=28), but k=28 introduces a distinct negative frontier mode: λ₀(η=1)=-1.81816e-1 and even the best scanned η=0.5 gives -1.32969e-1. Therefore the k=25..27 positive minima do not support a global B₀>0 pilot claim. N=25/N=27 Arb attempts are still running as finite-scale checks; they cannot erase the k=28 negative finite-scale pilot.
+**Status:** Working document; **RAW-GL PILOT SIGN QUARANTINE (2026-08-18)**. The earlier k=18..28 chain used `integrate_M_K(..., skip_remainder=True)`. Its high-degree M0 centers are not sign-safe: raw GL8 gave `M0(P55,P55)=0.422735`, while the focused Richardson-Arb enclosure is `[0.012416,0.012561]`. A focused audit of the integer witness `v=3P53+P55` gives `v^T C v ∈ [+0.2292033466,+0.3953780542]`, entirely positive. Thus the reported k=28 negative frontier mode and all legacy branch/B0 fits are quarantined; they are not evidence about positivity. The focused audit does not prove the full matrix positive definite. N=25/N=27 Arb attempts remain in progress as finite-scale checks.
 
 ---
 
@@ -53,7 +53,13 @@ harmonic threshold by 1.271 units, pushing the effective $N_{\min}$ from 5 to 13
 
 ## 3. Certify Data: L = 0.56, Odd Sector
 
-### 3.1 Float pilot (correct kappa, 2026-08-16)
+### 3.1 Legacy float chain (raw GL8 M_K; forensic only)
+
+**Quality warning:** rows k=18..28 below were extended with `skip_remainder=True`.
+The kappa constant was corrected, but the raw GL8 quadrature center omits the
+truncation remainder. Do not use these eigenvalues, branch labels, sign changes,
+or B0 fits as evidence. They are retained only to document the source of the
+false k=28 signal.
 
 | N | d | b_L | eig_full (η=0.5) | eig_full (η=1.0) | Δ (η=0.5) | r² |
 |---|---|-----|---------|---------|---|-----------------|
@@ -72,12 +78,12 @@ harmonic threshold by 1.271 units, pushing the effective $N_{\min}$ from 5 to 13
 | **25** | **51** | **+0.628** | **+1.47e-6** | **+1.54e-6 *** | — | — |
 | **26** | **53** | **+0.666** | **+1.58e-6** | **+1.64e-6** | — | — |
 | **27** | **55** | **+0.702** | **+1.70e-6** | **+1.76e-6** | — | — |
-| **28** | **57** | **+0.738** | **−0.13297** | **−0.18182** | — | — |
+| **28** | **57** | **+0.738** | **INVALID** | **INVALID** | — | — |
 
 *k=25 (2026-08-17): **ZERO CROSSING** — n_neg=0 at ALL η∈{0.5,0.65,0.8,0.9,1.0,1.1,1.22}. Only η=2.0 still n_neg=1.*
 *k=26 (2026-08-17): All η∈[0.5,1.22] n_neg=0. λ_min is IR mode ~1.6e-6; UV mode (λ₁) = +7.43e-3.*
 *k=27 (2026-08-18): **ALL η n_neg=0** (including η=2.0 for first time). λ_IR=+1.763e-6; λ_UV=+12.29e-3.*
-*k=28 (2026-08-18): **new negative frontier mode enters**. At η=1 the spectrum is λ₀=-0.181816 (frontier), λ₁=+1.865502e-6 (IR), λ₂=+0.012973 (continuing UV). All scanned η have n_neg=1. This invalidates interpreting the k=25..27 IR minimum as the global infimum trend.*
+*k=28 (2026-08-18, corrected): the apparent spectrum λ₀=-0.181816, λ₁=+1.865502e-6, λ₂=+0.012973 was a raw-GL8 artifact. A focused Richardson-Arb audit contradicts the negative witness; see §3.4.*
 
 **N=15 full-float validation** (2026-08-16, bwgqjkw5z, 10838s):
 Full 15×15 matrix from scratch (not sub-matrix): λ_min(η=1.0)=**−0.098986**, Frobenius η*=1.1715 gives
@@ -117,25 +123,47 @@ Key observations:
 | λ₀ ratio | — | — | 0.779 | 0.770 | 0.728 | 0.687 | **0.566** | **0.544** | **0.117** | **−0.002** | → 0 ↘ |
 | k×λ₀ | −2.09 | −1.27 | −0.88 | −0.72 | −0.548 | −0.395 | **−0.234** | **−0.133** | **−0.016** | **≈0** | → 0↗ |
 
-**Acceleration diagnostic for B₀>0**: Under model λ₀(k)=Ar^k+B₀, the raw ratio r_raw(k)=λ₀(k+1)/λ₀(k) satisfies:
-- B₀=0 (geometric): r_raw→r constant
-- B₀<0: r_raw→r (stays near constant)
-- **B₀>0: r_raw→0** as λ₀ approaches zero crossing from below
+### 3.2 Withdrawn raw-GL convergence and B0 fits
 
-Observed: r_raw = 0.728→0.687→0.566→0.544→0.117→−0.002 (monotone decrease to sign change). This is the predicted behavior for B₀>0 approaching zero crossing. B₀=0 would require r_raw≈constant≈0.79, inconsistent with the monotone decrease. **The acceleration is a model-independent diagnostic for B₀>0. Zero crossing confirmed at k=25.**
+The acceleration diagnostic, UV/IR branch assignment, zero-crossing claim, and
+all B0/bootstrap fits derived from k=18..28 legacy rows are **withdrawn**. The
+input M0 rows omitted the Richardson truncation remainder, so neither signs nor
+mode ordinals are reliable. In particular, the former statements
+"zero crossing confirmed at k=25", "B0_UV=+0.02361", and
+"B0_IR=+8.4655e-6" are no longer evidence claims.
 
-**Model comparison** (16-pt fit k=13..28, **tracked UV mode only**: λ₀ for k≤24, λ₁ for k=25..27, λ₂ at k=28; η=1.0):
+`fit_b0.py` now prints a quarantine warning for legacy `submatrix_k*.json`;
+once corrected rows exist it will prefer `submatrix_rich_k*.json` without mixing
+the two sequences.
 
-| Model | Parameters | B₀^UV (asymptote) | λ_UV(25) pred | **actual** | λ_UV(28) pred | **actual** | RMS |
-|-------|-----------|----------------|-------------|------------|-------------|------------|-----|
-| **Exp+B: $Ar^k+B$** | A=−2.031, r=0.831 | **+0.02361** | +0.00227 | **+3.25e-3** | +0.01191 | **+12.97e-3** | **1.33e-3** |
+### 3.3 Focused Richardson-Arb audit of the false k=28 signal
 
-**Note (2026-08-17)**: Previous 13/14-pt fits used λ_min at k=25,26 (which is the IR mode ≈1.6e-6, NOT the UV mode). The corrected UV mode fit (using λ₁ for k≥25) gives B₀^UV=+0.02319 (15-pt, k=13..27).
+The false raw-GL k=28 minimum suggested the integer Rayleigh witness
+$v=3P_{53}+P_{55}$. A focused Arb run computed only the required two M0 columns
+and the three S0 entries, with GL-8/GL-4 Richardson remainder:
 
-**λ₁ convergence model** (k=13..18): 5-pt NLS gives A=−1.84, r=0.805, **B₁=+0.045**.
-λ₁ asymptotes to +0.045 (clearly positive); zero crossing at k≈17.1 — **confirmed at k=18 (λ₁>0 observed)**.
+```text
+v^T C v ∈ [+0.2292033466, +0.3953780542]
+rayleigh_witness_status = nonnegative
+certified_not_positive_definite = false
+```
 
-**B₀ sensitivity and window analysis** (2026-08-16, detailed):
+This does **not** prove the full N=28 matrix positive definite. It does refute
+the proposed negative witness and exposes the magnitude of the raw-GL error:
+
+| M0 entry | legacy raw-GL center | focused Richardson-Arb center/radius |
+|---|---:|---:|
+| `P53,P53` | `0.050151` | `0.012955 ± 0.000144` |
+| `P53,P55` | `-0.138160` | `0.009174 ± 0.000127` |
+| `P55,P55` | `0.422735` | `0.012488 ± 0.000073` |
+
+The high-order quadrature error, not a new spectral branch, produced the apparent
+k=28 negative mode.
+
+<!-- WITHDRAWN RAW-GL BLOCK BEGIN (2026-08-18):
+     Everything through the "Zero crossing ... confirmed" sentence below used
+     skip_remainder=True M0 rows. It is forensic history only. -->
+**Withdrawn historical B₀ sensitivity analysis** (raw GL8 input):
 
 | Fit window | n pts | B₀ (exp+B) | r | AIC | k=25 pred |
 |------------|-------|-----------|---|-----|-----------|
@@ -201,7 +229,8 @@ Updated k=21..28 predictions using **13-pt exp+B model** (A=−2.347, r=0.820, B
 | 27 | +0.007 | pending | — |
 | 28 | +0.009 | pending | — |
 
-Zero crossing: k ≈ 24.6 (fit_b0.py). λ₀ crossed zero between k=24 and k=25 — **confirmed**.
+Zero crossing: k ≈ 24.6 (legacy fit_b0.py). This former confirmation is **withdrawn**.
+<!-- WITHDRAWN RAW-GL BLOCK END -->
 
 ### 3.1d UV-mode decomposition and rate transition (2026-08-16)
 
@@ -751,20 +780,16 @@ lower than previously thought.
 5. **T1 pilot extrapolations (L=0.62, 0.65) were invalid**: computed with $b_L < 0$;
    the "positive $\lambda_\infty$" predictions have no bearing on true convergence.
 
-6. **Current certify results and B₀ status** (updated 2026-08-18):
+6. **Current certify results and B₀ status** (corrected 2026-08-18):
    - N=19 η=0.1: pivot(0,0)∈[−0.038,−5.15e-4] — CNPD certified.
-   - **Dual-mode structure discovered**: λ_min(C_k) tracks two eigenvalue branches.
-     - **UV mode** (λ₀ for k≤24, λ₁ for k=25..27, λ₂ at k=28): confirmed zero
-       crossing between k=24 and k=25. Corrected 16-pt tracked-mode fit:
-       **B₀^UV=+0.02361, P=1.0000, CI=[+0.02028,+0.02917]**.
-     - **IR mode** (λ₁ for k≤24, λ₀ for k=25..27, λ₁ at k=28): all 11 values
-       k=18..28 are positive, in [4.5e-7, 1.866e-6]. A bounded 4-point fit gives
-       +8.4655e-6, upper-censored at 1e-5; it is discovery-only.
-     - **Frontier mode (new, k=28)**: λ₀=-0.181816 at η=1 and λ₀=-0.132969 at
-       the best scanned η=0.5. It is dominated by $P_{53}$--$P_{55}$ coupling and
-       invalidates a global B₀>0 pilot conclusion from the positive k=25..27 minima.
-   - **Note**: Previous 13/14-pt fits mixed IR-mode values at k=25,26. The corrected
-     tracked-mode fit does not rescue positivity because k=28 exposes a new negative mode.
+   - **Legacy dual-mode/B0 narrative withdrawn**: the k=18..28 chain omitted the
+     M_K Richardson remainder. Its UV/IR/frontier labels, zero crossing, B0 fits,
+     and bootstrap probabilities are not evidence.
+   - **Focused Richardson-Arb audit** at N=28 for `v=3P53+P55`:
+     `v^T C v ∈ [+0.2292033466,+0.3953780542]`, so this witness does not certify
+     non-positive-definiteness. The full-matrix sign remains unknown from this audit.
+   - `submatrix_chain.py` now uses the Richardson remainder and writes to a new
+     `submatrix_rich_*` namespace; it will not silently resume legacy raw rows.
 
 7. **Honest research narrative**: The second-window investigation documents the
    honest boundary of the split-residual Schur method when extended to two primes,
@@ -784,12 +809,13 @@ lower than previously thought.
 | **DONE** | **k=25: zero crossing confirmed** (n_neg=0, λ_IR=+1.54e-6, λ_UV=+3.25e-3) | `submatrix_k25.json` ✓ |
 | **DONE** | **k=26: dual-mode confirmed** (λ_IR=+1.64e-6, λ_UV=+7.44e-3) | `submatrix_k26.json` ✓ |
 | **DONE** | **k=27: ALL η n_neg=0** incl η=2.0; λ_IR=+1.763e-6, λ_UV=+12.29e-3 | `submatrix_k27.json` ✓ |
-| **DONE** | **k=28: new negative frontier mode** λ₀(η=1)=-1.818e-1; all scanned η n_neg=1 | `submatrix_k28.json` ✓ |
-| **DONE** | Tracked-mode 16-pt fit: B₀^UV=+0.02361, CI=[+0.02028,+0.02917]; IR 4-pt fit upper-censored | `fit_b0.py`, seed 20260818 |
+| **DONE** | **Raw-GL k=28 negative mode refuted for witness 3P53+P55**; legacy chain quarantined | `cert_fp_second_N28_frontier_eta1_p512.json` |
+| **DONE** | `submatrix_chain.py` fixed to retain Richardson remainder and isolate corrected outputs | `tests/test_submatrix_chain_remainder.py` |
 | **Active** | Certify N=25, η=1/1, prec=512, --no-bernstein (resumable checkpoint running) | `cert_fp_second_N25_eta1_p512.ckpt.json` |
 | **Queued** | Certify N=27, η=1/1, prec=512, --no-bernstein after N=25 | next in queue |
-| **High** | Treat N=25/N=27 only as finite-scale checks; they cannot override k=28 negative pilot | method boundary |
-| **High** | Design a certify-grade N=28 or focused $P_{53}$--$P_{55}$ frontier-mode certificate | after current run |
+| **High** | Treat N=25/N=27 as finite-scale min-pivot checks; no legacy chain narrative may override them | checker output |
+| **High** | Rebuild the k=18..28 chain under `submatrix_rich_*` only if mode tracking is still needed | corrected chain |
+| **High** | Add a pilot-sign firewall to proofctl candidate C13: raw-center outputs cannot enter sign narratives | upstream proposal |
 
 ---
 

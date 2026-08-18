@@ -1,58 +1,91 @@
-# Handoff — weil-second-prime (2026-08-18)
+# Handoff — weil-second-prime (2026-08-18, raw-GL correction)
 
 ## 1. One-line status
 
-The k=18..28 odd-sector submatrix chain is complete. The apparent positive
-minimum at k=25..27 was an IR-branch window, not a global positivity trend:
-k=28 introduces a distinct negative frontier mode with
-`lambda0(eta=1) = -1.8181565e-1`. The N=25 Arb attempt is running from its
-resumable checkpoint; N=27 is the next queued finite-scale check. No RH claim,
-no global positivity claim, and no extrapolation beyond `L < log 2`.
+The apparent k=28 negative frontier mode was a raw-GL8 truncation artifact, not
+a spectral result. A focused Richardson-Arb audit of the integer witness
+`v = 3*P53 + P55` gives `v^T C v ∈ [+0.2292033466, +0.3953780542]`, entirely
+positive. This refutes that particular negative witness but does not prove the
+full N=28 matrix positive definite. The legacy k=18..28 chain and all UV/IR/B0
+fits built from it are quarantined. N=25 remains in progress; N=27 is queued.
 
-## 2. Newly completed work
+## 2. Root cause
 
-- k=28 chain output:
-  - `pilots/submatrix_k28.json`
-  - `pilots/submatrix_k28_analysis.json`
-  - `pilots/submatrix_row27.npz`
-- Spectrum at `eta=1`:
-  - frontier mode: `lambda0 = -1.8181565e-1`
-  - IR mode: `lambda1 = +1.8655017e-6`
-  - continuing UV mode: `lambda2 = +1.2972974e-2`
-  - every scanned `eta in {0.5,...,2.0}` has one negative eigenvalue.
-- Float Rayleigh split for the k=28 frontier eigenvector:
-  - low block (`P1..P53`): `+2.0733604`
-  - `P53`-`P55` cross: `-4.4755881`
-  - `P55` diagonal: `+2.2204120`
-  - total: `-0.1818157`
-  - largest weights: `P53` (`0.8896`) and `P55` (`0.0956`).
-- Corrected branch tracking:
-  - continuing UV fit, k=13..28: `B0_UV=+0.02361`, RMS `1.33e-3`,
-    bootstrap CI `[+0.02028,+0.02917]`, seed `20260818`;
-  - IR 4-point fit: `B0_IR=+8.4655e-6`, but the bootstrap upper endpoint equals
-    the imposed `1e-5` bound, so this is upper-censored discovery data;
-  - the negative frontier mode is tracked separately and globally refutes the
-    pilot-level `B0>0` narrative at the current finite scale.
-- `scripts/fit_b0.py` fixes:
-  - deterministic bootstrap seed and explicit discovery-grade label;
-  - scale-normalized exponential fitting for IR-size data;
-  - separate UV, IR, and frontier branches (k=28 `lambda0` is no longer miscoded
-    as the continuing UV branch).
-- Documentation synchronized in `docs/method_boundary.md`,
-  `docs/SECOND_WINDOW_PAPER_DRAFT.md`, `PLAN.md`, and this handoff.
+The legacy `submatrix_chain.py` called:
 
-## 3. Running work
+```python
+integrate_M_K(..., use_bernstein=False, skip_remainder=True)
+```
+
+That returns a raw GL8 Arb ball with no Richardson or Bernstein truncation
+remainder. Its center is not sign-safe at high degree.
+
+Focused Arb comparison:
+
+| M0 entry | Legacy raw-GL center | Richardson-Arb center ± radius |
+|---|---:|---:|
+| `P53,P53` | `0.050151` | `0.012955 ± 0.000144` |
+| `P53,P55` | `-0.138160` | `0.009174 ± 0.000127` |
+| `P55,P55` | `0.422735` | `0.012488 ± 0.000073` |
+
+The raw `P55,P55` value is more than 33 times the focused center. The apparent
+k=28 mode and its Rayleigh decomposition were artifacts of this error.
+
+## 3. Focused k=28 audit
+
+Artifacts:
+
+- `scripts/certify_k28_frontier.py`
+- `pilots/cert_fp_second_N28_frontier_eta1_p512.json`
+- `pilots/cert_fp_second_N28_frontier_eta1_p512.frontier.ckpt.json`
+
+The script computes only the 55 unique M0 entries needed for the `P53` and `P55`
+columns plus three S0 entries. It writes a durable checkpoint after every unit.
+Result:
+
+```text
+rayleigh_witness_status = nonnegative
+v^T C v ∈ [+0.2292033466, +0.3953780542]
+certified_not_positive_definite = false
+```
+
+Interpretation:
+
+- It does **not** certify N=28 positive definite.
+- It does refute the proposed `3*P53 + P55` negative witness.
+- It uses Richardson GL-8/GL-4 remainder mode, with the documented empirical
+  remainder boundary; it is not a formal Bernstein analytic certificate.
+
+## 4. Corrections now in place
+
+- `scripts/submatrix_chain.py` no longer requests `skip_remainder=True`.
+- Corrected chain rows/spectra use a new namespace:
+  - `pilots/submatrix_rich_row*.npz`
+  - `pilots/submatrix_rich_k*.json`
+- The script will not silently resume legacy raw-GL row files.
+- `scripts/fit_b0.py`:
+  - prefers `submatrix_rich_k*.json` when available;
+  - refuses to mix corrected and legacy sequences;
+  - prints an explicit quarantine warning while only legacy `submatrix_k*.json`
+    files exist.
+- Legacy UV/IR/frontier mode labels, zero crossings, B0 fits, and bootstrap
+  probabilities are withdrawn from the active narrative.
+- Documentation and PLAN now record a proofctl C13 candidate:
+  **pilot-sign firewall** — raw-center outputs cannot support sign narratives
+  unless their remainder mode/enclosure is explicit.
+
+## 5. Running and queued work
 
 N=25 Arb attempt:
 
 ```text
-PID 8606: run_and_wait wrapper
-PID 8609: checker.fp_second.certify_fp_second
+checker PID: 8609
 log: /tmp/cert_fp_second_N25_eta1_p512.log
 checkpoint: pilots/cert_fp_second_N25_eta1_p512.ckpt.json
+progress at 2026-08-18 12:07 CST: 121/625 pairs
 ```
 
-Command being resumed:
+Command:
 
 ```bash
 env PYTHONPATH=. python3 -m checker.fp_second.certify_fp_second \
@@ -62,45 +95,38 @@ env PYTHONPATH=. python3 -m checker.fp_second.certify_fp_second \
   --resume
 ```
 
-The checker writes its checkpoint after every completed matrix pair and supports
-KeyboardInterrupt plus `--resume`. N=27 should be launched only after N=25 ends;
-it cannot override the k=28 negative pilot by itself.
+N=27 is queued by `/tmp/post_n27_after_n25.sh`. It starts only after N=25
+produces its final JSON. If N=25 dies without a final JSON, the queue errors
+rather than launching N=27 from unrelated state.
 
-## 4. Epistemic status
+## 6. Next steps
 
-- k=28 chain values are discovery-tier float pilot data. In particular,
-  `submatrix_chain.py` calls `integrate_M_K(..., skip_remainder=True)` for speed.
-  Do not present these values as Arb certificates.
-- A positive N=25/N=27 result would be finite-scale evidence only. The k=28
-  negative mode remains the controlling pilot obstacle.
-- The direct min-pivot judge remains mandatory for any certificate. Float
-  eigenvalues are for mode diagnosis only.
-- Richardson mode (`--no-bernstein`) is Arb outward-rounded arithmetic with the
-  documented empirical-remainder gap, not a formal Bernstein analytic certificate.
-- The 4-point IR asymptote is upper-censored; do not quote `8.4655e-6` as a
-  sharp bound.
+1. Let N=25 finish; inspect the JSON and checker exit status, not a self-reported
+   narrative.
+2. Run N=27 only through the existing serial queue.
+3. Do not restore the withdrawn k=18..28 mode/B0 claims.
+4. If mode tracking is still needed, rerun the corrected chain into
+   `submatrix_rich_*`; do not reuse legacy rows.
+5. Propose C13 upstream in proofctl: every numeric artifact must carry a
+   remainder mode, and raw-center values must be blocked from sign claims.
 
-## 5. Next concrete steps
+## 7. Verification snapshot
 
-1. Let N=25 finish or interrupt it cleanly; inspect both the JSON and checker
-   exit status. If interrupted, resume from the pair checkpoint.
-2. Launch N=27 with the same eta/precision/Richardson settings and resume
-   discipline.
-3. Design a certify-grade check of the k=28 frontier mode (preferably a focused
-   `P53`-`P55` coupling certificate if the mathematics permits one), rather than
-   relying on the float Rayleigh decomposition.
-4. If the N=25/N=27 interval widths are decisive, record the result honestly as
-   finite-scale indeterminate/positive/negative; do not broaden the conclusion.
-5. Keep `fit_b0.py` branch tracking and scale normalization under regression
-   tests before changing the model again.
+- Focused helper tests:
+  `python3 -m pytest tests/test_certify_k28_frontier.py -q` — 3 passed
+  (including replay from the completed interval checkpoint).
+- Chain remainder regression:
+  `python3 -m pytest tests/test_submatrix_chain_remainder.py -q` — 1 passed.
+- Combined targeted run:
+  `python3 -m pytest tests/test_submatrix_chain_remainder.py tests/test_certify_k28_frontier.py -q`
+  — 3 passed.
+- Full suite:
+  `python3 -m pytest tests/ -x` — **146 passed in 56.03s**.
+- The focused result was regenerated from its completed checkpoint after adding
+  `rayleigh_witness_status=nonnegative`.
 
-## 6. Verification snapshot
+## 8. One sentence for the next maintainer
 
-- Targeted regression: `python3 -m pytest tests/test_fit_b0.py -q` — 2 passed.
-- Full suite: `python3 -m pytest tests/ -x` — **142 passed in 50.52s**.
-
-## 7. One sentence for the next maintainer
-
-Resist the attractive k=25..27 window: k=28 exposed a new negative high-degree
-coupling mode, so the honest task is now to certify that frontier, not to narrate
-positivity from the IR branch.
+Do not narrate either positivity or a k=28 negative mode from the legacy chain:
+the immediate task is the N=25/N=27 min-pivot results and, if needed, a fully
+remainder-safe corrected chain.

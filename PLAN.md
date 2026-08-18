@@ -9,15 +9,21 @@
 
 ## 状态快照（一句话真相）
 
-**当前真相（2026-08-18）：k=28 发现新的负 frontier 模；全局正定性叙事撤销。**
-odd/$L=0.56$ 子矩阵链 k=18..28 已完成。k=25..27 的正 $\lambda_\min$ 只是 IR 分支短暂
-成为最小值；k=28 出现第三个模式：$\lambda_0(\eta=1)=-1.81816\times10^{-1}$，
-IR 分支为 $\lambda_1=+1.86550\times10^{-6}$，延续 UV 分支为 $\lambda_2=+1.29730\times10^{-2}$。
-所有扫描 $\eta$ 均负。该结果是 float discovery pilot（链上 $M_K$ 使用 `skip_remainder=True`），
-不得写成认证结论；但它足以撤销“B₀>0 已有试点证据”的叙事。当前 N=25 Arb 尝试已从
-checkpoint 恢复，N=27 排在其后；二者只可能给出有限尺度结果，不能覆盖 k=28 负试点。
-`fit_b0.py` 已修复两个试点层 bug：IR 尺度下 `curve_fit` 未归一化导致假渐近值；以及
-k=28 把新负模式误并入 UV 分支。
+**当前真相（2026-08-18 更新）：k=28 “负 frontier 模”是 raw-GL8 截断误差假信号。**
+旧 `submatrix_chain.py` 在 $M_K$ 中使用 `skip_remainder=True`，高阶对角项严重失真：
+例如 $M_0(P55,P55)$ raw-GL 中心为 $0.422735$，而 Richardson-Arb focused checkpoint
+为 $[0.012416,0.012561]$。对整数见证 $v=3P_{53}+P_{55}$，focused Arb 计算给出
+$v^TCv\in[+0.2292033466,+0.3953780542]$，整体为正，因此旧链的
+$\lambda_0(k28)=-0.181816$ 不能作为负性或 mode 结构证据。该 focused 结果只否定这个
+见证的非正定用法，不证明全矩阵正定。旧 `submatrix_k18..28.json` 全部隔离为 legacy
+raw-GL discovery；修正链将写入 `submatrix_rich_k*.json` / `submatrix_rich_row*.npz`。
+当前 N=25 Arb 尝试继续从逐 pair checkpoint 恢复，N=27 串行排队。
+
+**方法论发现（C13 候选）：pilot-sign firewall。** raw-center 数值可以用于找方向，但只要
+截断误差未进入区间，就不能参与符号叙事或模式命名。哪怕文件位于 `pilots/`，也必须携带
+remainder mode 与质量等级；否则一次性能优化会把假符号传播到论文草案。`fit_b0.py` 已
+显式 warning 并优先读取 corrected `submatrix_rich_k*` 序列；旧 B0/branch/bootstrap
+数值全部撤回，不作为证据。
 
 **历史快照（2026-08-15~16）。** 窗口 $L \in (\tfrac12\log3,\ \log2) \approx (0.549, 0.693)$，
 两素数 $p=2,3$ 均在单跳区，故素数层是真正的**双平移**对象，带交叉耦合

@@ -2,8 +2,10 @@
 Sequential sub-matrix chain: compute k=18..25 eigenvalue spectra.
 
 Extends the N=17 Arb checkpoint with new rows (P35..P49) one at a time.
-Each row is saved to pilots/submatrix_row{r:02d}.npz for resumability.
-Each spectrum is saved to pilots/submatrix_k{k:02d}.json.
+Each row is saved to pilots/submatrix_rich_row{r:02d}.npz for resumability.
+Each spectrum is saved to pilots/submatrix_rich_k{k:02d}.json.
+The older submatrix_row*.npz / submatrix_k*.json files were produced with the
+raw-GL8 M_K path (skip_remainder=True) and are legacy discovery output only.
 
 Row numbering: row r corresponds to basis function P_{2r+1}.
   r=17 → P35 (k=18), r=18 → P37 (k=19), ..., r=24 → P49 (k=25)
@@ -77,7 +79,7 @@ def compute_row(row_idx, indices):
         tb = time.time()
         V = mid_iv(V_matrix_entry(i, j, 128))
         K = mid_r(integrate_M_K(i, j, L_NUM, L_DEN, depth=2,
-                                  use_bernstein=False, skip_remainder=True))
+                                  use_bernstein=False))
         m0[b] = V + K
         svv = mid_iv(V2_matrix_entry(i, j, 128))
         svk = mid_r(integrate_S_VK(i, j, L_NUM, L_DEN, depth=2))
@@ -133,12 +135,9 @@ def do_spectrum(M0, S0, M2, S2, indices, k):
 
 
 def row_save_path(r):
-    # Try k18-specific file first (from compute_submatrix_k18.py)
-    if r == 17:
-        alt = pathlib.Path("pilots/submatrix_k18_row17.npz")
-        if alt.exists():
-            return alt
-    return pathlib.Path(f"pilots/submatrix_row{r:02d}.npz")
+    # Deliberately do not load the legacy raw-GL8 rows: their M_K centers omit
+    # the Richardson remainder and produced a false k=28 sign.
+    return pathlib.Path(f"pilots/submatrix_rich_row{r:02d}.npz")
 
 
 def main():
@@ -178,7 +177,7 @@ def main():
         n = row_idx + 1  # current matrix size
         indices = all_indices(n)
         new_degree = indices[row_idx]
-        out_json = pathlib.Path(f"pilots/submatrix_k{n:02d}.json")
+        out_json = pathlib.Path(f"pilots/submatrix_rich_k{n:02d}.json")
 
         print(f"\n{'='*60}", flush=True)
         print(f"Row {row_idx} (P{new_degree}), k={n}  [chain elapsed {time.time()-t_chain:.0f}s]",
@@ -195,7 +194,7 @@ def main():
                   flush=True)
             t_row = time.time()
             m0_row, s0_row = compute_row(row_idx, indices)
-            save_path = pathlib.Path(f"pilots/submatrix_row{row_idx:02d}.npz")
+            save_path = row_save_path(row_idx)
             np.savez(str(save_path), m0=m0_row, s0=s0_row)
             print(f"Row {row_idx} done in {time.time()-t_row:.0f}s, saved to {save_path}",
                   flush=True)
