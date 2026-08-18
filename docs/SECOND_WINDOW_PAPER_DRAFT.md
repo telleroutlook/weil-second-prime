@@ -47,7 +47,7 @@ $-0.02395$ at $k=20$** (cumulative ratio 0.832 from k=18, monotone). IR-block de
 8-pt exp+B model ($B_0=+0.008$, RMS $8.2\times10^{-4}$) better than the $B=0$ forced model.
 The second eigenvalue $\lambda_1$ confirmed zero-crossing at $k=18$ ($n_\text{neg}$ drops
 2→1), matching the $B_1=+0.045$ prediction.
-**Current status (2026-08-18): DUAL-MODE EIGENVALUE STRUCTURE DISCOVERED.** Chain k=18..27 complete. λ_min first crossed zero at k=25 and has remained positive through k=27. **Two distinct eigenvalue branches** identified: the UV mode (λ₀ for k≤24, λ₁ for k≥25) converges to $B_0^\text{UV} \approx +0.023$; the IR mode (λ₁ for k≤24, λ₀ for k≥25) is a small positive eigenvalue ~1.5–1.8e-6 that is the new minimum post-crossing. At k=27: ALL η (including η=2.0, which was last negative) have n_neg=0; λ_IR(27)=+1.763e-6; λ_UV(27)=+12.29e-3. **15-pt UV mode fit** (k=13..27): $B_0^\text{UV}=+0.02319$, RMS=1.35e-3, P($B_0^\text{UV}>0$)=**1.0000**, 95% CI=[+0.0192,+0.0300]. IR mode: 10 data points k=18..27, all positive, post-crossing mean=1.65e-6; 4-pt exponential fit pending k=28. **B₀ = B₀^IR > 0** (empirical P=1.000, 10 points). Previous 13-pt fit mixed branches (reported $B_0=+0.0177$); corrected UV-mode fit gives $B_0^\text{UV}=+0.02319$; IR mode asymptote B₀^IR to be determined from k=28. Certify N=25,27 queued.
+**Current status (2026-08-18): dual-mode tracking followed by a decisive k=28 frontier mode.** Chain k=18..28 is complete. The tracked UV branch crosses zero at k=25 and remains positive through k=28; the IR branch also remains positive. However, k=28 introduces a distinct negative frontier minimum: at η=1, $\lambda_0=-1.81816\times10^{-1}$, $\lambda_1=+1.86550\times10^{-6}$ (IR), and $\lambda_2=+1.29730\times10^{-2}$ (continuing UV). Every scanned $\eta\in[0.5,2.0]$ has $n_\text{neg}=1$. Thus the positive k=25..27 minima were an IR-branch window, not evidence of a global positive infimum. The corrected 16-point tracked-UV fit gives $B_0^\text{UV}=+0.02361$ (RMS $1.33\times10^{-3}$, P>0 = 1.0000, CI [+0.02028,+0.02917]); a bounded four-point IR fit gives +8.4655e-6 but is upper-censored at 1e-5. The new mode is dominated by $P_{53}$--$P_{55}$ coupling: its float Rayleigh split is $+2.07336-4.47559+2.22041=-0.181816$. This is discovery-grade only. Arb attempts at N=25 and N=27 remain finite-scale checks and cannot erase the k=28 negative pilot.
 
 Two numerical traps encountered in the second-window adaptation are documented:
 a kappa-contamination bug (importing a first-window constant $\kappa=1.255$ when
@@ -248,8 +248,9 @@ consequences.
 | A15 | min-pivot interval ($N{=}19$, $\eta{=}0.1$, odd) | $14/25$ | odd | $(0,0)\in[-3.80\!\times\!10^{-2},\ -5.15\!\times\!10^{-4}]$ — **certifiably negative** (upper $<0$) | [certify] | `pilots/cert_fp_second_N19_eta01.json` |
 | A14 | N-convergence float scan (corrected $\kappa{=}2.056$) | $14/25$ | odd | $N{=}7..17$: $-0.575,-0.390,-0.277,-0.188,-0.116,-0.076$ | [pilot] | `pilots/eig_scan_corrected_N*_final.json` |
 | A16 | Sub-matrix chain $k=18..22$ ($\lambda_0$ sequence) | $14/25$ | odd | $-0.049,-0.038,-0.027,-0.019,-0.011$ (η=1.0) | [pilot] | `pilots/submatrix_k18..22.json` |
-| A17 | B₀ UV-mode fit (15-pt, $k=13..27$) + bootstrap | $27/27$ | odd | $B_0^\text{UV}=+0.02319$; 95% CI $[+0.0192,+0.0300]$; P($B_0^\text{UV}>0$)=1.0000; IR mode 10 pts all positive, empirical B₀^IR≥4.5e-7 | [pilot] | `scripts/fit_b0.py` |
-| A18 | Sub-matrix chain k=18..27, dual-mode structure | $27/27$ | odd | λ_IR(k=25..27)=[1.537e-6,1.643e-6,1.763e-6] (all positive min); λ_UV(k=25..27)=[3.25e-3,7.44e-3,12.29e-3] (2nd eig); n_neg=0 ∀η at k=27 | [pilot] | `scripts/submatrix_chain.py` |
+| A17 | Tracked UV-mode fit (16-pt, $k=13..28$) + bootstrap | $27/27$ | odd | $B_0^\text{UV}=+0.02361$; 95% CI $[+0.02028,+0.02917]$; P($B_0^\text{UV}>0$)=1.0000; IR 4-pt fit +8.4655e-6 is upper-censored | [pilot] | `scripts/fit_b0.py` |
+| A18 | Sub-matrix chain k=18..27, dual-mode window | $27/27$ | odd | λ_IR(k=25..27)=[1.537e-6,1.643e-6,1.763e-6]; λ_UV=[3.25e-3,7.44e-3,12.29e-3]; n_neg=0 ∀η at k=27 | [pilot] | `scripts/submatrix_chain.py` |
+| A19 | k=28 frontier mode | $28/28$ | odd | λ₀=-0.181816 (η=1), best scanned η=0.5 gives -0.132969; IR λ₁=+1.865502e-6; continuing UV λ₂=+0.012973; n_neg=1 ∀η | [pilot] | `pilots/submatrix_k28.json` |
 
 Constants: $c_2=\log2/\sqrt2=0.4901$, $c_3=\log3/\sqrt3=0.6343$;
 $c_L=\log(2\pi L)+\gamma$ ($=1.816$ at $L=0.549$, $2.049$ at $L=0.693$). All
@@ -432,16 +433,30 @@ Step-wise ratios: $0.799, 0.772, 0.801, 0.792, 0.779, 0.770, 0.728, 0.687, \math
 | $Ar^k$ ($B{=}0$, forced, 10-pt) | $0$ | $-0.012$ | $-0.01066$ | $-0.004$ | $1.6\times10^{-3}$ |
 | Component: $B_0 = -0.029$ | $-0.029$ | $-0.049$ ✗ | $-0.01066$ | $-0.032$ | — (rejected) |
 
-10-pt fit selects Exp+B ($B_0=+0.016$, RMS $1.16\times10^{-3}$). **15-pt UV-mode Bootstrap** (k=13..27, using λ₁ for k≥25): **$B_0^\text{UV}=+0.02319$**, A=−2.053, r=0.830, RMS=1.35e-3. 95% CI=[+0.0192,+0.0300] — entirely positive. P($B_0^\text{UV}>0$)=**1.0000**.
+10-pt fit selects Exp+B ($B_0=+0.016$, RMS $1.16\times10^{-3}$). **16-point tracked-UV bootstrap** (k=13..28, seed 20260818): **$B_0^\text{UV}=+0.02361$**, A=−2.031, r=0.831, RMS=1.33e-3. 95% CI=[+0.02028,+0.02917] — entirely positive. P($B_0^\text{UV}>0$)=**1.0000**.
 
-**Critical correction (2026-08-18): dual-mode branch structure.** The eigenvalue λ₀ is NOT a single converging sequence. At k=25, λ₀ jumps from the UV branch (which crossed zero) to the IR branch (a small positive eigenvalue ~1.5e-6 that was λ₁ for k≤24). Previous 13-pt fit used λ_IR at k=25,26 (~1.6e-6), causing $B_0$ to be underreported as +0.0177. The corrected UV-mode 15-pt fit gives $B_0^\text{UV}=+0.02319$. Two separate asymptotes:
+**Critical correction (2026-08-18): mode tracking, then a third frontier mode.** The eigenvalue λ₀ is NOT a single converging sequence. At k=25, λ₀ jumps from the UV branch (which crossed zero) to the IR branch (a small positive eigenvalue ~1.5e-6 that was λ₁ for k≤24). At k=28 a new negative frontier mode enters at λ₀. The earlier 15-point UV fit ($B_0^\text{UV}=+0.02319$) was correct for k≤27 but must be updated with the correctly identified k=28 UV ordinate λ₂. Three mode classes are:
 
-| Branch | Regime | Values (k=25..27) | Asymptote |
+| Branch | Regime | Values (k=25..28) | Asymptote / status |
 |--------|--------|-------------------|-----------|
-| UV mode (λ₁ for k≥25) | post-crossing 2nd eig | 3.25e-3, 7.44e-3, 12.29e-3 | $B_0^\text{UV}=+0.023$ |
-| IR mode (λ₀ for k≥25) | post-crossing min | 1.537e-6, 1.643e-6, 1.763e-6 | $B_0^\text{IR}>1.76$e-6 (fit pending k=28) |
+| UV mode (λ₁ at k=25..27, λ₂ at k=28) | continuing post-crossing branch | 3.25e-3, 7.44e-3, 12.29e-3, 12.97e-3 | $B_0^\text{UV}=+0.02361$ |
+| IR mode (λ₀ at k=25..27, λ₁ at k=28) | small positive branch | 1.537e-6, 1.643e-6, 1.763e-6, 1.866e-6 | bounded 4-pt estimate +8.4655e-6, upper-censored |
+| Frontier mode (λ₀ at k=28) | new negative minimum | −0.181816 at η=1; −0.132969 at η=0.5 | dominates global pilot infimum |
 
-IR mode growth rate: stable ~7%/step (k=25→26: 6.9%, k=26→27: 7.3%). All 10 IR values (k=18..27) positive → empirical P($B_0^\text{IR}>0$)=1.000.
+All 11 tracked IR values (k=18..28) are positive, but that empirical fact does not imply $B_0>0$ for the full quadratic form: the k=28 frontier mode is negative at every scanned η.
+
+**k=28 frontier decomposition.** The minimum eigenvector has its largest weights on
+$P_{53}$ ($|v|^2=0.8896$) and the newly added $P_{55}$ ($|v|^2=0.0956$). With the
+blocks split at $P_{53}|P_{55}$, the float Rayleigh quotient is
+\[
+  +2.07336_{\text{low block}}
+  -4.47559_{\text{cross}}
+  +2.22041_{P_{55}\text{ diagonal}}
+  = -0.181816.
+\]
+All diagonal entries in the reconstruction are positive; the failure is caused by
+high-degree off-diagonal coupling. This decomposition is discovery-grade and must
+not be presented as an Arb certificate.
 
 **UV-mode decomposition: the constant UV-cross term (2026-08-16, critical finding).**
 Decomposing $\lambda_0 = v^T C v$ into three parts using the min-eigenvector $v$:
@@ -810,4 +825,3 @@ unbridged gaps (finite-scale to full-window, and Weil positivity to RH).
 
 *Last updated: 2026-08-16. k=19 chain result (~1h) and N=19 certify result (~3.5h)
 will update §6.3 and §8. UV-cross layer finding is the session's main new result.*
-

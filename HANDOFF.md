@@ -1,65 +1,106 @@
-# Handoff — weil-second-prime (scaffold, 2026-08-08)
+# Handoff — weil-second-prime (2026-08-18)
 
 ## 1. One-line status
-S2–S6 DONE (2026-08-08). The pipeline is complete: archimedean machinery ported
-(S2, single-prime-limit self-check exact max|dC|=0); cross-prime term F implemented
-+ 4 invariants (S3); cross term certified as the second window's real new structure
-(S4, metric A max|ΔC|≥0.63/0.14 at Arb grade); schema+domain+checker+pilot cert
-(S5, CERTIFIED); full proofctl integration (S6, claim ACCEPTED, release --dry-run
-PASS, C01–C11 all green). 131 python tests pass.
-**Honest boundaries (strictly separate): cross-term significant = CERTIFIED;
-second window positive-definite = FALSE at left end L=11/20 (odd certifiably
-negative, even indeterminate); RH = no implication. Scope: finite-scale, L<log2.**
 
-## 2. What exists now
-- `README.md`, `CLAUDE.md`, `PLAN.md`, this file — identity, rules, plan.
-- `src/archimedean/{integrator_a,integrator_b,interval,ldlt,log_moments,kernel,bernstein}.py`
-  — ported verbatim (trusted, four-term S0, P0 bugs already fixed upstream).
-- `checker/archimedean/{integrate,check_archimedean,replay}.py` — shared checker machinery.
-- `checker/fp035/recompute_schur.py` — trusted four-term S0 + min-pivot, single-prime
-  ground truth for the S2 self-check.
-- `src/prime_layer/legendre_shift.py` — single-prime J/E (ported).
-- `src/prime_layer/legendre_shift_2prime.py` — two-prime layer: M2 both shifts complete;
-  S2 cross term F NOT yet implemented, RAISES when c3!=0 (no silent F=0 — C11 discipline).
-- `scripts/single_prime_limit_check.py` + `tests/prime_layer/test_single_prime_limit.py`
-  — the S2 acceptance gate.
-- `docs/PROOF_CONSTITUTION.md` (ported from weil-first — the epistemic discipline).
+The k=18..28 odd-sector submatrix chain is complete. The apparent positive
+minimum at k=25..27 was an IR-branch window, not a global positivity trend:
+k=28 introduces a distinct negative frontier mode with
+`lambda0(eta=1) = -1.8181565e-1`. The N=25 Arb attempt is running from its
+resumable checkpoint; N=27 is the next queued finite-scale check. No RH claim,
+no global positivity claim, and no extrapolation beyond `L < log 2`.
 
-## 3. The next concrete steps (in order)
-1. **S2 — port shared machinery** — ✅ DONE. Ported verbatim, tests pass,
-   single-prime-limit self-check PASSES (max|dC|=0).
-2. **S3 — two-shift prime layer**: implement the cross-prime term
-   $F_{ij}(\tau_2,\tau_3) = \langle C_{\tau_3,1}P_j, C_{\tau_2,1}P_i\rangle$ in
-   `legendre_shift_2prime.py` (currently RAISES for c3!=0). It is the exchange
-   Gram between the two shifts — derive the exact $\mathbb{Q}[\tau_2,\tau_3]$
-   integral, do NOT stub it to 0 (that is the C11 bug the prototype carried).
-   Ground-truth check: c3=0 already reproduces weil-first (S2 gate); add a
-   parity/symmetry check on F and a `tau_2=tau_3` consistency check (F must equal
-   E there).
-3. **S4 — profile prime influence FIRST** (the key steer): a cheap mutation-style
-   probe of per-sector, per-prime, per-cross-term influence on the Schur pivot.
-   Do NOT budget compute symmetrically. Spend hard compute where the pivot moves.
-4. **S5 — schema + domain + first pilot cert** once S3/S4 say the method is sound.
+## 2. Newly completed work
 
-## 4. Trust discipline (inherited, do not relax)
-- Full four-term $S^{(0)}$; two-prime $S^{(2)}$ with ALL cross terms. Omitting any
-  is the C11 bug class.
-- Verdicts require certify grade (Arb interval), never pilot/float.
-- A number supporting an exciting narrative demands MORE scrutiny (PROOF_CONSTITUTION D1).
-- Diff artifacts element-wise before narrating a disagreement (D2).
-- Process defect ≠ wrong conclusion (D3).
+- k=28 chain output:
+  - `pilots/submatrix_k28.json`
+  - `pilots/submatrix_k28_analysis.json`
+  - `pilots/submatrix_row27.npz`
+- Spectrum at `eta=1`:
+  - frontier mode: `lambda0 = -1.8181565e-1`
+  - IR mode: `lambda1 = +1.8655017e-6`
+  - continuing UV mode: `lambda2 = +1.2972974e-2`
+  - every scanned `eta in {0.5,...,2.0}` has one negative eigenvalue.
+- Float Rayleigh split for the k=28 frontier eigenvector:
+  - low block (`P1..P53`): `+2.0733604`
+  - `P53`-`P55` cross: `-4.4755881`
+  - `P55` diagonal: `+2.2204120`
+  - total: `-0.1818157`
+  - largest weights: `P53` (`0.8896`) and `P55` (`0.0956`).
+- Corrected branch tracking:
+  - continuing UV fit, k=13..28: `B0_UV=+0.02361`, RMS `1.33e-3`,
+    bootstrap CI `[+0.02028,+0.02917]`, seed `20260818`;
+  - IR 4-point fit: `B0_IR=+8.4655e-6`, but the bootstrap upper endpoint equals
+    the imposed `1e-5` bound, so this is upper-censored discovery data;
+  - the negative frontier mode is tracked separately and globally refutes the
+    pilot-level `B0>0` narrative at the current finite scale.
+- `scripts/fit_b0.py` fixes:
+  - deterministic bootstrap seed and explicit discovery-grade label;
+  - scale-normalized exponential fitting for IR-size data;
+  - separate UV, IR, and frontier branches (k=28 `lambda0` is no longer miscoded
+    as the continuing UV branch).
+- Documentation synchronized in `docs/method_boundary.md`,
+  `docs/SECOND_WINDOW_PAPER_DRAFT.md`, `PLAN.md`, and this handoff.
 
-## 5. Environment
-- proofctl at `~/github/proofctl` (modifiable + publishable — if a new kernel
-  blind spot appears, fix upstream first, then continue here). `~/bin/proofctl` deployed.
-- github push may need a proxy via `${HTTPS_PROXY:-}` (local environment).
-- python-flint (Arb), numpy; tectonic for LaTeX.
-- Long tasks: `~/.local/bin/run_and_wait.sh -t <sec> -- <cmd>`; no bare `&`.
-- Second-window integrals are heavier than first window ($c_L\approx1.82$, two
-  shifts) — expect long certify runs; checkpoint/resume is mandatory (CLAUDE.md).
+## 3. Running work
 
-## 6. One sentence to the next maintainer
-This repo's value is that it is a *live* new-math host: it will produce real bugs
-that neither the math nor proofctl's designers can invent by self-testing —
-capture each one honestly (it advances both the mathematics and the verifier),
-and never let the second window's novelty tempt a claim past $L=\log2$ or toward RH.
+N=25 Arb attempt:
+
+```text
+PID 8606: run_and_wait wrapper
+PID 8609: checker.fp_second.certify_fp_second
+log: /tmp/cert_fp_second_N25_eta1_p512.log
+checkpoint: pilots/cert_fp_second_N25_eta1_p512.ckpt.json
+```
+
+Command being resumed:
+
+```bash
+env PYTHONPATH=. python3 -m checker.fp_second.certify_fp_second \
+  --L 56 100 --sector odd --N 25 --prec 512 \
+  --eta 1/1 --no-bernstein \
+  --out pilots/cert_fp_second_N25_eta1_p512.json \
+  --resume
+```
+
+The checker writes its checkpoint after every completed matrix pair and supports
+KeyboardInterrupt plus `--resume`. N=27 should be launched only after N=25 ends;
+it cannot override the k=28 negative pilot by itself.
+
+## 4. Epistemic status
+
+- k=28 chain values are discovery-tier float pilot data. In particular,
+  `submatrix_chain.py` calls `integrate_M_K(..., skip_remainder=True)` for speed.
+  Do not present these values as Arb certificates.
+- A positive N=25/N=27 result would be finite-scale evidence only. The k=28
+  negative mode remains the controlling pilot obstacle.
+- The direct min-pivot judge remains mandatory for any certificate. Float
+  eigenvalues are for mode diagnosis only.
+- Richardson mode (`--no-bernstein`) is Arb outward-rounded arithmetic with the
+  documented empirical-remainder gap, not a formal Bernstein analytic certificate.
+- The 4-point IR asymptote is upper-censored; do not quote `8.4655e-6` as a
+  sharp bound.
+
+## 5. Next concrete steps
+
+1. Let N=25 finish or interrupt it cleanly; inspect both the JSON and checker
+   exit status. If interrupted, resume from the pair checkpoint.
+2. Launch N=27 with the same eta/precision/Richardson settings and resume
+   discipline.
+3. Design a certify-grade check of the k=28 frontier mode (preferably a focused
+   `P53`-`P55` coupling certificate if the mathematics permits one), rather than
+   relying on the float Rayleigh decomposition.
+4. If the N=25/N=27 interval widths are decisive, record the result honestly as
+   finite-scale indeterminate/positive/negative; do not broaden the conclusion.
+5. Keep `fit_b0.py` branch tracking and scale normalization under regression
+   tests before changing the model again.
+
+## 6. Verification snapshot
+
+- Targeted regression: `python3 -m pytest tests/test_fit_b0.py -q` — 2 passed.
+- Full suite: `python3 -m pytest tests/ -x` — **142 passed in 50.52s**.
+
+## 7. One sentence for the next maintainer
+
+Resist the attractive k=25..27 window: k=28 exposed a new negative high-degree
+coupling mode, so the honest task is now to certify that frontier, not to narrate
+positivity from the IR branch.
