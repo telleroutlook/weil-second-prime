@@ -79,11 +79,15 @@ Interpretation:
 N=25 Arb attempt:
 
 ```text
-checker PID: 8609
-log: /tmp/cert_fp_second_N25_eta1_p512.log
+checker PID: 68482 (resume #2, 2026-08-20)
+log: /tmp/cert_fp_second_N25_eta1_p512_resume2.log
 checkpoint: pilots/cert_fp_second_N25_eta1_p512.ckpt.json
-progress at 2026-08-18 12:07 CST: 121/625 pairs
+progress at 2026-08-20 06:20 CST: 536/625 pairs
 ```
+
+The first managed run reached the outer `run_and_wait` timeout at 536 completed
+pairs and exited without a final JSON. No completed pair was lost. The checker
+was resumed with a 250000s outer timeout from the durable pair checkpoint.
 
 Command:
 
@@ -95,7 +99,7 @@ env PYTHONPATH=. python3 -m checker.fp_second.certify_fp_second \
   --resume
 ```
 
-N=27 is queued by `/tmp/post_n27_after_n25.sh`. It starts only after N=25
+N=27 is queued by `/tmp/post_n27_after_n25_resume2.sh`. It starts only after N=25
 produces its final JSON. If N=25 dies without a final JSON, the queue errors
 rather than launching N=27 from unrelated state.
 
