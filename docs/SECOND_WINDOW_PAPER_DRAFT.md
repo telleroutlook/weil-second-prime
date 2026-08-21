@@ -47,7 +47,7 @@ $-0.02395$ at $k=20$** (cumulative ratio 0.832 from k=18, monotone). IR-block de
 8-pt exp+B model ($B_0=+0.008$, RMS $8.2\times10^{-4}$) better than the $B=0$ forced model.
 The second eigenvalue $\lambda_1$ confirmed zero-crossing at $k=18$ ($n_\text{neg}$ drops
 2→1), matching the $B_1=+0.045$ prediction.
-**Current status (2026-08-18, corrected): raw-GL sign quarantine.** The k=18..28 submatrix chain used `skip_remainder=True` for $M_K$. Its high-degree centers are not sign-safe: raw GL8 gave $M_0(P55,P55)=0.422735$, while the focused Richardson-Arb enclosure is $[0.012416,0.012561]$. For the integer witness $v=3P_{53}+P_{55}$ suggested by the false spectrum, the focused audit gives $v^TCv\in[+0.2292033466,+0.3953780542]$, entirely positive. Therefore the apparent k=28 negative frontier mode, UV/IR branch narrative, and all associated B0/bootstrap fits are withdrawn. The focused result does not prove full-matrix positive definiteness. N=25 and N=27 remain finite-scale min-pivot checks.
+**Current status (2026-08-21, corrected): raw-GL sign quarantine.** The k=18..28 submatrix chain used `skip_remainder=True` for $M_K$. Its high-degree centers are not sign-safe: raw GL8 gave $M_0(P55,P55)=0.422735$, while the focused Richardson-Arb enclosure is $[0.012416,0.012561]$. For the integer witness $v=3P_{53}+P_{55}$ suggested by the false spectrum, the focused audit gives $v^TCv\in[+0.2292033466,+0.3953780542]$, entirely positive. Therefore the apparent k=28 negative frontier mode, UV/IR branch narrative, and all associated B0/bootstrap fits are withdrawn. The focused result does not prove full-matrix positive definiteness. The N=25 min-pivot attempt completed indeterminate at pivot $(1,1)$ with interval $[-2.353866\times10^{-2},+5.044900\times10^{-2}]$; N=27 is running.
 
 Three numerical traps encountered in the second-window adaptation are documented:
 a kappa-contamination bug (importing a first-window constant $\kappa=1.255$ when
@@ -254,6 +254,7 @@ consequences.
 | A17 | Legacy UV/IR/B0 fits | $27/27$ | odd | All B0/bootstrap and branch claims withdrawn | [pilot withdrawn] | `scripts/fit_b0.py` |
 | A18 | Legacy dual-mode chain k=18..27 | $27/27$ | odd | Mode labels/sign changes not remainder-safe | [pilot quarantined] | `pilots/submatrix_k18..27.json` |
 | A19 | Focused k=28 raw-GL refutation | $28/28$ | odd | $v=3P53+P55$: Rayleigh interval $[+0.2292033466,+0.3953780542]$; nonnegative witness, no full-matrix positivity claim | [Arb/Richardson pilot] | `pilots/cert_fp_second_N28_frontier_eta1_p512.json` |
+| A20 | N=25 min-pivot attempt, η=1, prec=512 | $27/27$ | odd | Pivot $(1,1)\in[-2.353866\text{e-}2,+5.044900\text{e-}2]$ — indeterminate | [Arb/Richardson] | `pilots/cert_fp_second_N25_eta1_p512.json` |
 
 Constants: $c_2=\log2/\sqrt2=0.4901$, $c_3=\log3/\sqrt3=0.6343$;
 $c_L=\log(2\pi L)+\gamma$ ($=1.816$ at $L=0.549$, $2.049$ at $L=0.693$). All

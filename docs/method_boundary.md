@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-18  
 **Grade:** analysis (float pilot data + certified anchors)  
-**Status:** Working document; **RAW-GL PILOT SIGN QUARANTINE (2026-08-18)**. The earlier k=18..28 chain used `integrate_M_K(..., skip_remainder=True)`. Its high-degree M0 centers are not sign-safe: raw GL8 gave `M0(P55,P55)=0.422735`, while the focused Richardson-Arb enclosure is `[0.012416,0.012561]`. A focused audit of the integer witness `v=3P53+P55` gives `v^T C v ∈ [+0.2292033466,+0.3953780542]`, entirely positive. Thus the reported k=28 negative frontier mode and all legacy branch/B0 fits are quarantined; they are not evidence about positivity. The focused audit does not prove the full matrix positive definite. N=25/N=27 Arb attempts remain in progress as finite-scale checks.
+**Status:** Working document; **RAW-GL PILOT SIGN QUARANTINE (2026-08-18)**. The earlier k=18..28 chain used `integrate_M_K(..., skip_remainder=True)`. Its high-degree M0 centers are not sign-safe: raw GL8 gave `M0(P55,P55)=0.422735`, while the focused Richardson-Arb enclosure is `[0.012416,0.012561]`. A focused audit of the integer witness `v=3P53+P55` gives `v^T C v ∈ [+0.2292033466,+0.3953780542]`, entirely positive. Thus the reported k=28 negative frontier mode and all legacy branch/B0 fits are quarantined; they are not evidence about positivity. The focused audit does not prove the full matrix positive definite. N=25 completed indeterminate at pivot `(1,1)` with interval `[-2.353866e-2,+5.044900e-2]`; N=27 is running.
 
 ---
 
@@ -782,6 +782,9 @@ lower than previously thought.
 
 6. **Current certify results and B₀ status** (corrected 2026-08-18):
    - N=19 η=0.1: pivot(0,0)∈[−0.038,−5.15e-4] — CNPD certified.
+   - N=25 η=1, prec=512, Richardson mode (completed 2026-08-20):
+     pivot(1,1)∈[−2.353866e-2,+5.044900e-2] — **INDETERMINATE**. This is not
+     a positivity certificate and not a certified negative pivot.
    - **Legacy dual-mode/B0 narrative withdrawn**: the k=18..28 chain omitted the
      M_K Richardson remainder. Its UV/IR/frontier labels, zero crossing, B0 fits,
      and bootstrap probabilities are not evidence.
@@ -811,8 +814,8 @@ lower than previously thought.
 | **DONE** | **k=27: ALL η n_neg=0** incl η=2.0; λ_IR=+1.763e-6, λ_UV=+12.29e-3 | `submatrix_k27.json` ✓ |
 | **DONE** | **Raw-GL k=28 negative mode refuted for witness 3P53+P55**; legacy chain quarantined | `cert_fp_second_N28_frontier_eta1_p512.json` |
 | **DONE** | `submatrix_chain.py` fixed to retain Richardson remainder and isolate corrected outputs | `tests/test_submatrix_chain_remainder.py` |
-| **Active** | Certify N=25, η=1/1, prec=512, --no-bernstein (resumable checkpoint running) | `cert_fp_second_N25_eta1_p512.ckpt.json` |
-| **Queued** | Certify N=27, η=1/1, prec=512, --no-bernstein after N=25 | next in queue |
+| **DONE** | Certify N=25, η=1/1, prec=512, --no-bernstein: **INDETERMINATE**, pivot(1,1) interval straddles zero | `cert_fp_second_N25_eta1_p512.json` |
+| **Active** | Certify N=27, η=1/1, prec=512, --no-bernstein (checkpoint running) | `cert_fp_second_N27_eta1_p512.ckpt.json` |
 | **High** | Treat N=25/N=27 as finite-scale min-pivot checks; no legacy chain narrative may override them | checker output |
 | **High** | Rebuild the k=18..28 chain under `submatrix_rich_*` only if mode tracking is still needed | corrected chain |
 | **High** | Add a pilot-sign firewall to proofctl candidate C13: raw-center outputs cannot enter sign narratives | upstream proposal |

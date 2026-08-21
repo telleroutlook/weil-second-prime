@@ -7,7 +7,8 @@ a spectral result. A focused Richardson-Arb audit of the integer witness
 `v = 3*P53 + P55` gives `v^T C v ∈ [+0.2292033466, +0.3953780542]`, entirely
 positive. This refutes that particular negative witness but does not prove the
 full N=28 matrix positive definite. The legacy k=18..28 chain and all UV/IR/B0
-fits built from it are quarantined. N=25 remains in progress; N=27 is queued.
+fits built from it are quarantined. N=25 completed as indeterminate; N=27 is
+now running from its durable pair checkpoint.
 
 ## 2. Root cause
 
@@ -74,40 +75,41 @@ Interpretation:
   **pilot-sign firewall** — raw-center outputs cannot support sign narratives
   unless their remainder mode/enclosure is explicit.
 
-## 5. Running and queued work
+## 5. Completed and running work
 
-N=25 Arb attempt:
+N=25 Arb result (completed 2026-08-20 23:51 CST):
 
 ```text
-checker PID: 68482 (resume #2, 2026-08-20)
-log: /tmp/cert_fp_second_N25_eta1_p512_resume2.log
-checkpoint: pilots/cert_fp_second_N25_eta1_p512.ckpt.json
-progress at 2026-08-20 06:20 CST: 536/625 pairs
+result:     pilots/cert_fp_second_N25_eta1_p512.json
+checkpoint: pilots/cert_fp_second_N25_eta1_p512.ckpt.json (625/625 pairs)
+certified:  false — INDETERMINATE
+failed pivot: (1,1)
+interval:   [-2.353866e-2, +5.044900e-2]
 ```
 
-The first managed run reached the outer `run_and_wait` timeout at 536 completed
-pairs and exited without a final JSON. No completed pair was lost. The checker
-was resumed with a 250000s outer timeout from the durable pair checkpoint.
+The interval straddles zero, so this run neither certifies positive definiteness
+nor certifies a negative pivot. The first managed run reached its outer timeout
+at 536/625 pairs; the completed checkpoint was resumed and all 625 pairs were
+finished. The final resume segment reported `elapsed_s=63179.5`.
 
-Command:
+N=27 Arb attempt (running):
 
-```bash
-env PYTHONPATH=. python3 -m checker.fp_second.certify_fp_second \
-  --L 56 100 --sector odd --N 25 --prec 512 \
-  --eta 1/1 --no-bernstein \
-  --out pilots/cert_fp_second_N25_eta1_p512.json \
-  --resume
+```text
+checker PID: 19387
+watcher: /tmp/post_n27_after_n25_resume2.sh
+log: /tmp/post_n27_after_n25_resume2.log
+checkpoint: pilots/cert_fp_second_N27_eta1_p512.ckpt.json
+progress at 2026-08-21 11:54 CST: 337/729 pairs (46.2%)
+current pair: (12,13)=(P25,P27), step 338/729
 ```
 
-N=27 is queued by `/tmp/post_n27_after_n25_resume2.sh`. It starts only after N=25
-produces its final JSON. If N=25 dies without a final JSON, the queue errors
-rather than launching N=27 from unrelated state.
+The watcher launched N=27 automatically after the N=25 JSON appeared. Its outer
+timeout is 600000s and its checkpoint is pair-durable.
 
 ## 6. Next steps
 
-1. Let N=25 finish; inspect the JSON and checker exit status, not a self-reported
-   narrative.
-2. Run N=27 only through the existing serial queue.
+1. Let N=27 finish; inspect its JSON and checker-derived result.
+2. Record N=25 as indeterminate, not positive or negative.
 3. Do not restore the withdrawn k=18..28 mode/B0 claims.
 4. If mode tracking is still needed, rerun the corrected chain into
    `submatrix_rich_*`; do not reuse legacy rows.

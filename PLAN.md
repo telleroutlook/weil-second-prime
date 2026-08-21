@@ -17,7 +17,9 @@ $v^TCv\in[+0.2292033466,+0.3953780542]$，整体为正，因此旧链的
 $\lambda_0(k28)=-0.181816$ 不能作为负性或 mode 结构证据。该 focused 结果只否定这个
 见证的非正定用法，不证明全矩阵正定。旧 `submatrix_k18..28.json` 全部隔离为 legacy
 raw-GL discovery；修正链将写入 `submatrix_rich_k*.json` / `submatrix_rich_row*.npz`。
-当前 N=25 Arb 尝试继续从逐 pair checkpoint 恢复，N=27 串行排队。
+N=25 Arb 尝试已完成：pivot(1,1) 区间 $[-2.353866\times10^{-2},
++5.044900\times10^{-2}]$ 跨零，结论为 **indeterminate**（既非正定认证，也非
+certified negative）。N=27 已自动接续，从逐 pair checkpoint 继续运行。
 
 **方法论发现（C13 候选）：pilot-sign firewall。** raw-center 数值可以用于找方向，但只要
 截断误差未进入区间，就不能参与符号叙事或模式命名。哪怕文件位于 `pilots/`，也必须携带
